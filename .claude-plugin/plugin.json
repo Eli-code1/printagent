@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
-  "name": "printgent",
-  "displayName": "Printgent",
+  "name": "printagent",
+  "displayName": "Printagent",
   "version": "0.1.0",
   "description": "An agentic design-for-manufacturing loop for FDM 3D printing: generate parametric build123d parts, run deterministic manufacturability gates (wall thickness, overhangs, drainage, build-volume fit), review structural loads, diagnose print failures, and package a slicer handoff, plus an opt-in plain-language mode.",
   "author": {

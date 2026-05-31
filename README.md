@@ -1,6 +1,6 @@
-# Printgent
+# Printagent
 
-Printgent is a pack of [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for
+Printagent is a pack of [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for
 Claude Code that turns an idea into a verified, printable FDM part. You describe a part, the
 skills generate it as parametric CAD, run deterministic printability gates, review its strength,
 and package it for a slicer. A beginner-friendly mode runs the whole loop in plain language for
@@ -22,15 +22,15 @@ This repository is both a plugin and its own marketplace, so it installs by name
 ## Install
 
 ```text
-/plugin marketplace add Eli-code1/printgent
-/plugin install printgent@printgent-skills
+/plugin marketplace add Eli-code1/printagent
+/plugin install printagent@printagent-skills
 ```
 
 The skills are then available in every project on that machine. Manage them with `/plugin list`,
-`/plugin disable printgent@printgent-skills`, and the rest of the `/plugin` commands.
+`/plugin disable printagent@printagent-skills`, and the rest of the `/plugin` commands.
 
 If you want to test it locally before publishing, point the marketplace at this folder instead:
-`/plugin marketplace add /path/to/printgent`.
+`/plugin marketplace add /path/to/printagent`.
 
 ## Python dependencies
 

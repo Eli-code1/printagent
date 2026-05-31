@@ -1,15 +1,15 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
-  "name": "printgent-skills",
+  "name": "printagent-skills",
   "owner": {
     "name": "Eli-code1"
   },
   "metadata": {
-    "description": "Printgent: skills for an agentic FDM 3D-printing design loop in Claude Code."
+    "description": "Printagent: skills for an agentic FDM 3D-printing design loop in Claude Code."
   },
   "plugins": [
     {
-      "name": "printgent",
+      "name": "printagent",
       "source": "./",
       "description": "Generate, verify, review, and hand off FDM-printable parts: the full design loop as Agent Skills."
     }
