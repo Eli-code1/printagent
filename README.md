@@ -66,5 +66,5 @@ loop converges on a part that is both modelled and verified-printable.
 
 ## License
 
-Not yet licensed (all rights reserved by default). Add a `LICENSE` file before sharing
-publicly if you want to permit reuse.
+[MIT](LICENSE) © 2026 Eli-code1 — use it for anything, including commercial work; just
+keep the copyright line.
