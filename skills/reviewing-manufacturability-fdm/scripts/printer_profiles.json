@@ -1,0 +1,8 @@
+{
+  "generic":         {"nozzle": 0.4, "bed_mm": [220, 220, 250], "usable_margin_mm": 3, "max_overhang_deg": 45},
+  "bambu_x1c":       {"nozzle": 0.4, "bed_mm": [256, 256, 256], "usable_margin_mm": 5, "max_overhang_deg": 65},
+  "bambu_p1s":       {"nozzle": 0.4, "bed_mm": [256, 256, 256], "usable_margin_mm": 5, "max_overhang_deg": 60},
+  "bambu_a1":        {"nozzle": 0.4, "bed_mm": [256, 256, 256], "usable_margin_mm": 4, "max_overhang_deg": 55},
+  "prusa_mk4s":      {"nozzle": 0.4, "bed_mm": [250, 210, 220], "usable_margin_mm": 3, "max_overhang_deg": 55},
+  "prusa_core_one":  {"nozzle": 0.4, "bed_mm": [250, 220, 270], "usable_margin_mm": 4, "max_overhang_deg": 60}
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
+  "name": "fdm-skills",
+  "owner": {
+    "name": "Eli-code1"
+  },
+  "metadata": {
+    "description": "Skills for an agentic FDM 3D-printing design loop with Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "fdm-design",
+      "source": "./",
+      "description": "Generate, verify, review, and hand off FDM-printable parts — the full design loop as Agent Skills."
+    }
+  ]
+}
