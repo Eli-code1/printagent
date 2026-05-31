@@ -11,7 +11,7 @@
     {
       "name": "fdm-design",
       "source": "./",
-      "description": "Generate, verify, review, and hand off FDM-printable parts — the full design loop as Agent Skills."
+      "description": "Generate, verify, review, and hand off FDM-printable parts: the full design loop as Agent Skills."
     }
   ]
 }
