@@ -1,0 +1,12 @@
+{
+  "id": "adapter",
+  "family": "adapter",
+  "intent": "A tubular adapter, coupler, or sleeve with a through bore, for joining or sleeving round parts like hoses, tubes, or dowels.",
+  "keywords": ["adapter", "adaptor", "coupler", "sleeve", "reducer", "bushing", "tube", "spacer ring", "collar"],
+  "parameters": {
+    "outer_dia": {"default": 30.0, "units": "mm", "desc": "outside diameter"},
+    "bore_dia": {"default": 24.0, "units": "mm", "desc": "through-bore diameter"},
+    "length": {"default": 25.0, "units": "mm", "desc": "sleeve length"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}

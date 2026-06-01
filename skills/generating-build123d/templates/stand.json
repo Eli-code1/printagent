@@ -1,0 +1,13 @@
+{
+  "id": "stand",
+  "family": "stand",
+  "intent": "An angled stand that holds a phone, tablet, book, or sign at a viewing angle, with a front lip to stop it sliding.",
+  "keywords": ["stand", "phone stand", "tablet stand", "holder stand", "display stand", "easel", "dock", "cradle"],
+  "parameters": {
+    "width": {"default": 80.0, "units": "mm", "desc": "stand width"},
+    "base_depth": {"default": 70.0, "units": "mm", "desc": "base depth (sets the lean angle)"},
+    "back_h": {"default": 55.0, "units": "mm", "desc": "back height (sets the lean angle)"},
+    "front_h": {"default": 8.0, "units": "mm", "desc": "front lip height (also the minimum thickness)"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}

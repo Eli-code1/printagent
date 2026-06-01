@@ -1,0 +1,16 @@
+{
+  "id": "tray",
+  "family": "tray",
+  "intent": "A shallow open-top tray with optional dividers, for sorting small parts, stationery, or hardware.",
+  "keywords": ["tray", "divider tray", "sorting tray", "drawer insert", "compartment", "parts tray", "organizer tray"],
+  "parameters": {
+    "inner_w": {"default": 120.0, "units": "mm", "desc": "inside width"},
+    "inner_d": {"default": 80.0, "units": "mm", "desc": "inside depth"},
+    "inner_h": {"default": 25.0, "units": "mm", "desc": "inside height"},
+    "wall": {"default": 2.5, "units": "mm", "desc": "wall and divider thickness"},
+    "base": {"default": 2.5, "units": "mm", "desc": "floor thickness"},
+    "div_x": {"default": 1, "desc": "dividers across the width"},
+    "div_y": {"default": 0, "desc": "dividers across the depth"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}
