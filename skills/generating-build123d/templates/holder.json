@@ -1,0 +1,15 @@
+{
+  "id": "holder",
+  "family": "holder",
+  "intent": "An open-top rectangular holder or organizer sized by its inner cavity, for pens, tools, parts, or desk clutter.",
+  "keywords": ["holder", "organizer", "organiser", "cup", "caddy", "bin", "tray",
+               "container", "pen holder", "tool holder", "desk tidy", "pot"],
+  "parameters": {
+    "inner_w": {"default": 60.0, "units": "mm", "desc": "inside width"},
+    "inner_d": {"default": 40.0, "units": "mm", "desc": "inside depth"},
+    "inner_h": {"default": 50.0, "units": "mm", "desc": "inside height"},
+    "wall": {"default": 2.5, "units": "mm", "desc": "wall thickness"},
+    "base": {"default": 2.5, "units": "mm", "desc": "floor thickness"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}
