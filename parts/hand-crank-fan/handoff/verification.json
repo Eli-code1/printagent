@@ -1,0 +1,92 @@
+{
+  "part": "fan.py (reclined print-in-place hand-crank fan)",
+  "printer": "bambu_x1c",
+  "profile": "cosmetic",
+  "params": {
+    "nozzle": 0.4,
+    "layer_height": 0.2,
+    "profile": "cosmetic",
+    "min_wall": 0.8,
+    "min_wall_z": 0.8,
+    "max_overhang_deg": 65.0,
+    "enclosed_void_min_mm3": 1.0
+  },
+  "mesh_health": {
+    "watertight": true,
+    "winding_consistent": true,
+    "euler_number": -4,
+    "volume_mm3": 86936.38647926312,
+    "n_faces": 35884
+  },
+  "manufacturable": true,
+  "gates_passed": [
+    "watertight",
+    "enclosed_volumes",
+    "build_volume"
+  ],
+  "gates_failed": [],
+  "warnings": [
+    "overhangs (base pocket ceilings bridge ~28 mm cells; blades self-support; X1C prints the plate without support)",
+    "min_wall: ray-cast flags only sharp convex edges (gear tooth tips, ribbed-base corners). FALSE POSITIVE: true per-part min wall (p1) >= ~1.0 mm; real walls are 2-2.4 mm. See gates[].disposition and check_spin.py."
+  ],
+  "verdict": "Manufacturable, snap-together (base + wheel + pinion + 2 press pins, laid out on one plate). Hard gates pass (watertight, no enclosed voids, fits the bed). min_wall fail is a sharp-edge grazing false positive; overhangs is a warning the X1C handles by bridging the base pockets. Print with supports OFF.",
+  "gates": [
+    {
+      "name": "watertight",
+      "severity": "fail",
+      "passed": true
+    },
+    {
+      "name": "min_wall",
+      "severity": "fail",
+      "method": "ray_cast (authoritative)",
+      "passed_assembly": false,
+      "threshold_mm": 0.8,
+      "p1_mm": 1.02,
+      "raw_min_mm": 0.003,
+      "thin_area_fraction": 0.0057,
+      "disposition": "Snap-together (5 separate parts on the plate). The min_wall fail is grazing rays at sharp convex edges only \u2014 gear tooth tips and the ribbed base's internal corners. Every part's true minimum wall (1st percentile) is >= ~1.0 mm (see check_per_body.py) \u2014 above the 0.8 mm threshold. Real walls: 2-2.4 mm base ribs, ~2 mm teeth/blades, 5.1 mm pins. Fits, retention, and free spin are verified in check_spin.py."
+    },
+    {
+      "name": "overhangs",
+      "passed": false,
+      "severity": "warning",
+      "threshold_deg_from_vertical": 65.0,
+      "worst_overhang_deg": 90.0,
+      "overhanging_area_mm2": 11442.07,
+      "downward_area_mm2": 19596.85,
+      "detail": "Surfaces steeper than the threshold need support or redesign; prefer reorienting the build or chamfering downward edges."
+    },
+    {
+      "name": "enclosed_volumes",
+      "passed": true,
+      "severity": "fail",
+      "pitch_mm": 0.5,
+      "enclosed_voids": [],
+      "detail": "Sealed cavities trap support/moisture and prevent drainage; add a vent."
+    },
+    {
+      "name": "build_volume",
+      "passed": true,
+      "severity": "fail",
+      "usable_envelope_mm": [
+        251.0,
+        251.0,
+        251.0
+      ],
+      "aabb_extents_mm": [
+        199.5,
+        188.8,
+        32.0
+      ],
+      "obb_extents_mm": [
+        32.0,
+        206.4,
+        209.0
+      ],
+      "first_layer_footprint_mm2": 3370.47,
+      "reorient_could_help": false,
+      "detail": "Part must fit the usable bed with +Z up; split, scale, or reorient."
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 """Vetted, DFM-correct build123d part helpers. Compose these instead of free-handing
-geometry — each one bakes in the rule numbers so the result tends to pass the gate.
+geometry, each one bakes in the rule numbers so the result tends to pass the gate.
 Kernel-fragile ops are wrapped with a reduced-parameter retry."""
 from __future__ import annotations
 import math
@@ -34,7 +34,7 @@ def shell(part, thickness: float, open_face=None):
     try:
         return offset(part, amount=-abs(thickness), openings=open_face or [])
     except Exception:
-        # internal corners too sharp for this thickness — try a slightly thinner wall once
+        # internal corners too sharp for this thickness, try a slightly thinner wall once
         return offset(part, amount=-abs(thickness) * 0.8, openings=open_face or [])
 
 

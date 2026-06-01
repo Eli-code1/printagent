@@ -27,7 +27,7 @@ resting on the principal load supplied in the part spec.
   of the load is carried across layers, it warns and suggests reorienting so the load sits in
   XY. This is the single most consequential structural decision for a printed part.
 - **Weakest cross-section.** Slices the part along Z and reports the smallest cross-sectional
-  area and its height — the plane where layer adhesion carries the least material and where a
+  area and its height, the plane where layer adhesion carries the least material and where a
   part loaded in Z-tension tends to fail. A sharp local dip is a neck to thicken or fillet.
 - **Stress risers.** Finds sharp concave (reentrant) edges from face adjacency and recommends a
   fillet, since sharp internal corners concentrate stress and seed cracks.
@@ -51,7 +51,7 @@ back as a thicken/fillet edit.
 
 ## Caveats
 - **Mass is an estimate.** Printed parts are not solid; reported mass is solid mass at the
-  material density. Actual mass falls between walls-only and solid depending on infill — the
+  material density. Actual mass falls between walls-only and solid depending on infill, the
   script reports a rough infill-scaled figure, not an FEA result.
 - This skill does not run finite-element analysis; it computes geometric proxies for strength.
   For load-critical parts, treat its output as a screen, not a certification.

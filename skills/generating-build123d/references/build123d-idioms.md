@@ -1,9 +1,9 @@
 # build123d idioms (concentrated reference)
 
-Assumes build123d >= 0.10, algebra mode unless noted. APIs are version-sensitive — pin it.
+Assumes build123d >= 0.10, algebra mode unless noted. APIs are version-sensitive, pin it.
 
 ## Two modes
-**Algebra (preferred for generated code)** — objects combine with operators, placement by
+**Algebra (preferred for generated code)**, objects combine with operators, placement by
 multiplying a Location:
 
     from build123d import *
@@ -12,7 +12,7 @@ multiplying a Location:
     part += Pos(-15, 0, 10) * Box(6, 6, 4)                    # add a boss
     part &= Sphere(25)                                        # intersect
 
-**Builder** — context managers, for when a feature needs the running context:
+**Builder**, context managers, for when a feature needs the running context:
 
     with BuildPart() as bp:
         Box(40, 20, 10)
@@ -35,7 +35,7 @@ Constructors take `align=(Align.MIN|CENTER|MAX, ...)`. To sit a body on z=0:
 `Pos(x, y, z)`, `Rot(rx, ry, rz)`, `Plane.XY/XZ/YZ` (and `Plane(origin=, z_dir=)`),
 `Axis.X/Y/Z`, `Location`. Compose by multiplying: `Rot(0, 90, 0) * Pos(0, 0, 5) * Cylinder(2, 8)`.
 
-## Selectors (return ShapeList — index and slice freely)
+## Selectors (return ShapeList, index and slice freely)
     part.faces()              part.edges()              part.vertices()
     .filter_by(GeomType.CIRCLE)        # planar/cylindrical/etc.
     .filter_by(Axis.Z)                 # faces whose normal ~ Z; edges ~ Z
@@ -55,6 +55,6 @@ Examples:
     part = mirror(part, about=Plane.XZ)
 
 ## Test as you go
-After each major step, assert the invariant you expect — `assert part.is_valid()`,
+After each major step, assert the invariant you expect, `assert part.is_valid()`,
 `assert abs(part.volume - expected) < tol`, `len(part.faces().filter_by(GeomType.CIRCLE)) == n`.
 Cheap inline checks catch a bad selector before it propagates.

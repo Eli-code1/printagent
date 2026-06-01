@@ -34,7 +34,7 @@ def _mesh_from_brep(path: str, ext: str) -> trimesh.Trimesh:
 
 def sanitize(mesh: trimesh.Trimesh) -> tuple[trimesh.Trimesh, dict]:
     """Repair what is safely repairable; report health. Never silently hides a
-    non-watertight mesh — downstream volume/inertia would be meaningless."""
+    non-watertight mesh, downstream volume/inertia would be meaningless."""
     mesh.merge_vertices()
     mesh.process(validate=True)   # dedupe faces/vertices, drop degenerate
     mesh.fix_normals()

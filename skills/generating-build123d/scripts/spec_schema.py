@@ -1,4 +1,4 @@
-"""Structured part spec — the output of the Step 0 clarifier and the input to generation.
+"""Structured part spec, the output of the Step 0 clarifier and the input to generation.
 Fill it after clarifying; record assumptions you made so the loop and the user can see them."""
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
