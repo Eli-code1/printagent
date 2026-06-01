@@ -55,7 +55,7 @@ def to_fix_list(report: dict) -> list[str]:
                              f"add_vent(part, {v['centroid_mm']}, 3.0).")
         elif name == "build_volume":
             tail = (" or reorient (OBB fits)." if g.get("reorient_could_help")
-                    else " — split or scale.")
+                    else ", split or scale.")
             fixes.append(f"Part {g.get('aabb_extents_mm')} exceeds usable "
                          f"{g.get('usable_envelope_mm')}{tail}")
     return fixes

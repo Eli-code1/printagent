@@ -1,9 +1,9 @@
 ---
 name: analyzing-print-failures
 description: >-
-  Diagnoses FDM 3D-print failures from a photo or a symptom description — warping, stringing,
+  Diagnoses FDM 3D-print failures from a photo or a symptom description, warping, stringing,
   layer shifting, under-extrusion, elephant's foot, delamination, ghosting, pillowing, clogs,
-  support and bridging failures — identifies the failure mode, classifies it as design-time
+  support and bridging failures, identifies the failure mode, classifies it as design-time
   preventable vs a process/printer setting, and returns the remedy plus where to route the fix.
   Use when a print failed, looks wrong, or the user asks why a print came out badly or how to
   troubleshoot it.
@@ -15,7 +15,7 @@ This skill is the post-print diagnostic. It maps a symptom (often a photo) to a 
 then routes the fix: geometric causes go back to `generating-build123d`; process causes become
 a setting recommendation for the slicing/printer agent, which the design loop cannot apply
 itself. Many design-time-preventable failures should already have been caught by the
-manufacturability gate before printing — if one appears post-print, it usually means the part
+manufacturability gate before printing, if one appears post-print, it usually means the part
 skipped the gate or was printed in a different orientation.
 
 ## How to use

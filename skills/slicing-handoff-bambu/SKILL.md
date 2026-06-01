@@ -16,18 +16,18 @@ This skill produces the contract artifact that crosses the boundary from the des
 the printing project. It assembles a self-describing directory; it does not own the printer.
 Slicing is included and is unaffected by Bambu's firmware lockdown; *starting a print* is
 deliberately out of scope, because the Authorization Control System constrains it to LAN +
-developer mode, Bambu Connect, or SD-card delivery — a choice the downstream printing agent
+developer mode, Bambu Connect, or SD-card delivery, a choice the downstream printing agent
 owns, not this one.
 
 ## What it produces
 A handoff directory containing:
-- `model.3mf` — millimetre geometry for the slicer (3MF carries units and survives transport;
+- `model.3mf`, millimetre geometry for the slicer (3MF carries units and survives transport;
   preferred over STL).
-- `model.step` — lossless B-rep archive for CAD round-trip.
-- `verification.json` — the manufacturability gate's report (gates passed/failed/warnings).
-- `renders/` — multi-view PNGs, if provided.
-- `provenance.json` — file hashes, timestamps, and the source spec reference for auditability.
-- `manifest.json` — the contract: geometry block, print_intent (hints), verification, provenance.
+- `model.step`, lossless B-rep archive for CAD round-trip.
+- `verification.json`, the manufacturability gate's report (gates passed/failed/warnings).
+- `renders/`, multi-view PNGs, if provided.
+- `provenance.json`, file hashes, timestamps, and the source spec reference for auditability.
+- `manifest.json`, the contract: geometry block, print_intent (hints), verification, provenance.
 
 ## How to run
     python scripts/run_handoff.py PART.step \

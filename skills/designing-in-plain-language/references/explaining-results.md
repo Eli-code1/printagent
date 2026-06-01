@@ -7,13 +7,13 @@ choice. Never show coordinates, raw thresholds, JSON, or internal field names. T
 need to adapt the wording.
 
 ## From the manufacturability gate (verification.json)
-- **watertight (fail):** "The 3D model isn't fully sealed — there's a gap in its surface that
+- **watertight (fail):** "The 3D model isn't fully sealed, there's a gap in its surface that
   print software can't read. I'll close it up."
 - **min_wall (fail):** "Part of your design is too thin to print reliably. Thin spots come out
-  fragile or don't print at all. I can thicken them — want me to?"
-- **min_wall (inconclusive):** "I couldn't fully check the wall thickness on this shape — worth
+  fragile or don't print at all. I can thicken them, want me to?"
+- **min_wall (inconclusive):** "I couldn't fully check the wall thickness on this shape, worth
   a closer look before printing."
-- **overhangs (warning):** "Your design has a steep overhang — a section that leans out over
+- **overhangs (warning):** "Your design has a steep overhang, a section that leans out over
   empty space more than your printer prints cleanly. I can tilt how it's printed, round or
   angle that edge, or add removable scaffolding. Want me to pick the cleanest option?"
 - **enclosed_volumes (fail):** "There's a sealed hollow pocket inside with no way out, which
@@ -24,7 +24,7 @@ need to adapt the wording.
 
 ## From the structural reviewer (structural_review.json)
 - **layer_anisotropy (warning):** "The way it's set to print, the main force on it would pull
-  across the layers — the weaker direction. I can reorient it so it's stronger. Worth doing?"
+  across the layers, the weaker direction. I can reorient it so it's stronger. Worth doing?"
 - **stress_risers (warning):** "A few sharp inside corners could crack under stress. I can
   round them slightly so they hold up better."
 
