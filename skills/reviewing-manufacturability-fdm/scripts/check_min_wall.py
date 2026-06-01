@@ -1,83 +1,134 @@
-"""Minimum wall-thickness gate.
+"""Minimum wall-thickness gate (cone-SDF primary, bias-aware fusion).
 
-ray thickness : AUTHORITATIVE. From even surface samples, cast a ray inward
-                along the -normal to the opposite wall; that distance IS the
-                local wall thickness. Unlike max_sphere it does NOT collapse at
-                convex edges (a solid cube reads its full width everywhere), so
-                no corner/edge-exclusion heuristics are needed. A part fails
-                when a meaningful fraction of the sampled surface is thinner
-                than T (a few spurious grazing rays are tolerated).
-voxel opening : CORROBORATING evidence only, never the verdict. trimesh's
-                voxelized().fill() over-thickens thin features by ~1-2 cells,
-                so the ball-fit test can miss genuinely thin walls.
-brep offset   : EXPERIMENTAL positive-evidence only; failure is never a fail.
+cone_sdf : PRIMARY, approximately unbiased. From even surface samples, cast a
+           small cone of inward rays (Shape-Diameter-Function style; Shapira &
+           Shamir 2008) and take the per-point MEDIAN of the surviving ray
+           lengths as the local wall thickness. The cone plus the median reject
+           the single grazing ray and the concave wraparound hit that fool a
+           lone -normal ray. Three per-ray filters drop self-hits, grazing
+           exits, and 2-hop face-adjacent wraparound.
+voxel    : CORROBORATOR. Binary opening via a padded distance transform. It
+           OVER-estimates thickness, so its FAIL is strong evidence and its PASS
+           is weak.
+brep     : POSITIVE-EVIDENCE only (OCCT inward offset); failure is never a fail.
+
+Fusion is bias-aware, and method disagreement surfaces as INDETERMINATE, never a
+silent PASS. Verdicts use the shared vocabulary: PASS | FAIL | INDETERMINATE |
+NOT_RUN.
 """
 from __future__ import annotations
+from collections import defaultdict
 import numpy as np
 import trimesh
 from scipy import ndimage
 
+SEED = 1234
+_TOL = 1e-3   # mm: float-noise guard so the threshold boundary is deterministic
 
-def _ray_thickness(mesh, T, n_samples=4000):
-    """Authoritative wall-thickness gate by inward ray casting."""
-    from trimesh.proximity import thickness
+
+def _cone_sdf(mesh, T, n_samples=1500, k=6, half_angle_deg=60.0):
+    """Approximately-unbiased local thickness by an inward cone of rays."""
+    np.random.seed(SEED)
     try:
-        pts, _ = trimesh.sample.sample_surface_even(mesh, n_samples)
+        pts, fidx = trimesh.sample.sample_surface_even(mesh, n_samples)
     except Exception as e:
-        return {"passed": None, "confidence": "none", "note": f"sampling failed: {e}"}
-    if len(pts) == 0:
-        return {"passed": None, "confidence": "none", "note": "no surface samples"}
+        return {"verdict": "NOT_RUN", "passed": None, "note": f"sampling failed: {e}"}
+    pts, fidx = np.asarray(pts), np.asarray(fidx)
+    n = len(pts)
+    if n == 0:
+        return {"verdict": "NOT_RUN", "passed": None, "note": "no surface samples"}
 
-    th = thickness(mesh=mesh, points=pts, exterior=False, method="ray")
-    valid = np.isfinite(th) & (th > 1e-6)
-    th, pts = th[valid], pts[valid]
-    if len(th) == 0:
-        return {"passed": None, "confidence": "none", "note": "no valid thickness rays"}
+    fn = mesh.face_normals[fidx]
+    axis = -fn / (np.linalg.norm(fn, axis=1, keepdims=True) + 1e-12)   # inward
+    ref = np.tile([1.0, 0.0, 0.0], (n, 1))
+    ref[np.abs(axis[:, 0]) > 0.9] = [0.0, 1.0, 0.0]
+    t1 = np.cross(axis, ref)
+    t1 /= (np.linalg.norm(t1, axis=1, keepdims=True) + 1e-12)
+    t2 = np.cross(axis, t1)
 
-    thin = th < T
+    ca = np.cos(np.radians(half_angle_deg))
+    golden = np.pi * (3.0 - np.sqrt(5.0))
+    diag = float(np.linalg.norm(mesh.extents)) or 1.0
+    eps = max(1e-6 * diag, 0.01 * T)
+
+    origins, dirs, ray_pt = [], [], []
+    for j in range(k):
+        if j == 0:
+            d = axis.copy()
+        else:
+            z = ca + (1.0 - ca) * (j / (k - 1))
+            alpha = np.arccos(np.clip(z, -1.0, 1.0))
+            phi = j * golden
+            d = (np.cos(alpha) * axis
+                 + np.sin(alpha) * (np.cos(phi) * t1 + np.sin(phi) * t2))
+        d /= (np.linalg.norm(d, axis=1, keepdims=True) + 1e-12)
+        origins.append(pts + d * eps)
+        dirs.append(d)
+        ray_pt.append(np.arange(n))
+    origins = np.vstack(origins)
+    dirs = np.vstack(dirs)
+    ray_pt = np.concatenate(ray_pt)
+
+    locs, idx_ray, idx_tri = mesh.ray.intersects_location(
+        origins, dirs, multiple_hits=False)
+    if len(idx_ray) == 0:
+        return {"verdict": "NOT_RUN", "passed": None, "note": "no ray hits"}
+
+    dist = np.linalg.norm(locs - pts[ray_pt[idx_ray]], axis=1)
+    keep = dist > eps                                              # self-hits
+    # A head-on exit has the ray direction aligned with the exit face's OUTWARD
+    # normal (the ray is leaving the solid there), so dot(normal, dir) ~ +1.
+    # Grazing exits trend toward 0; drop them.
+    head_on = np.einsum("ij,ij->i", mesh.face_normals[idx_tri], dirs[idx_ray])
+    keep &= head_on >= 0.5
+    # NB: a face-adjacency wraparound filter was tried and removed. On low-poly
+    # CAD exports (a box is 12 triangles) the 2-hop neighbourhood of any face
+    # covers the whole mesh, so it discarded every legitimate opposite-wall hit.
+    # The per-point median already rejects the minority wraparound outliers.
+
+    idx_ray, dist = idx_ray[keep], dist[keep]
+    if len(dist) == 0:
+        return {"verdict": "NOT_RUN", "passed": None,
+                "note": "all rays filtered (degenerate geometry)"}
+
+    by_pt = defaultdict(list)
+    for p, dd in zip(ray_pt[idx_ray], dist):
+        by_pt[int(p)].append(dd)
+    med = np.array([np.median(v) for v in by_pt.values()])
+
+    thin = med < (T - _TOL)
     thin_count = int(thin.sum())
-    # Tolerate a few spurious grazing/edge rays; a genuine thin wall paints many
-    # samples. Floor is the larger of 3 rays or 0.2% of the sampled surface.
-    noise = max(3, int(0.002 * len(th)))
-    passed = bool(thin_count <= noise)
-
-    locs = []
-    if not passed:
-        tp = pts[thin]
-        step = max(1, len(tp) // 8)
-        for p in tp[::step][:8]:
-            locs.append([round(float(v), 1) for v in p])
-
-    return {"passed": passed, "confidence": "high",
-            "min_wall_mm": round(float(np.percentile(th, 1)), 3),
-            "raw_min_mm": round(float(th.min()), 3),
-            "thin_area_fraction": round(thin_count / len(th), 4),
-            "thin_sample_count": thin_count, "samples": int(len(th)),
-            "thin_locations_mm": locs,
-            "note": "inward ray-cast normal thickness; min_wall_mm is the robust p1"}
+    valid = len(med)
+    noise = max(3, int(0.005 * valid))
+    verdict = "FAIL" if thin_count > noise else "PASS"
+    return {"verdict": verdict, "passed": (verdict == "PASS"),
+            "min_wall_mm": round(float(np.percentile(med, 1)), 3),
+            "median_wall_mm": round(float(np.median(med)), 3),
+            "thin_fraction": round(thin_count / valid, 4),
+            "thin_point_count": thin_count, "points_measured": valid,
+            "rays_per_point": k,
+            "note": "cone-SDF inward rays, per-point median; min_wall_mm is p1"}
 
 
 def _voxel_opening(mesh, T, max_voxels=40_000_000):
-    """Corroborating only. NOT authoritative — see module docstring."""
+    """Corroborator only. Over-estimates thickness, so FAIL is strong, PASS weak."""
     pitch = T / 3.0
     est = float(np.prod(np.ceil(mesh.extents / pitch) + 2))
     confidence, note = "high", None
     if est > max_voxels:
         pitch = float((float(np.prod(mesh.extents)) / max_voxels) ** (1 / 3))
         confidence = "low"
-        note = (f"voxel pitch coarsened to {pitch:.3f} mm to fit budget; "
-                f"features below ~{2 * pitch:.2f} mm may be missed")
+        note = (f"voxel pitch coarsened to {pitch:.3f} mm; features below "
+                f"~{2 * pitch:.2f} mm may be missed")
 
     vg = mesh.voxelized(pitch=pitch).fill()
-    # Pad with a background shell so the distance transform has an exterior to
-    # measure against; without it a bbox-filling solid yields a garbage EDT.
     solid = np.pad(vg.matrix, 1, mode="constant", constant_values=False)
     if solid.sum() == 0:
         return {"passed": None, "confidence": "none", "note": "voxelization empty"}
 
-    edt = ndimage.distance_transform_edt(solid) * pitch       # mm to surface
+    edt = ndimage.distance_transform_edt(solid) * pitch
     r = T / 2.0
-    eroded = edt >= r                                         # ball-center voxels
+    eroded = edt >= r
     if not eroded.any():
         return {"passed": False, "confidence": confidence, "pitch_mm": round(pitch, 3),
                 "note": note or "whole part thinner than T (corroborating)"}
@@ -98,8 +149,7 @@ def _voxel_opening(mesh, T, max_voxels=40_000_000):
 
 
 def _brep_offset_evidence(shape, T):
-    """EXPERIMENTAL. Inward offset of T/2; success => weak evidence walls >= T.
-    OCCT offset is fragile and version-sensitive — failure is always inconclusive."""
+    """EXPERIMENTAL positive-evidence only. OCCT offset failure is inconclusive."""
     if shape is None:
         return {"evidence": None, "note": "no B-rep shape"}
     try:
@@ -116,31 +166,48 @@ def _brep_offset_evidence(shape, T):
         return {"evidence": "pass" if ok else "inconclusive",
                 "note": "inward offset solid non-empty" if ok else "offset collapsed"}
     except Exception as e:
-        return {"evidence": "inconclusive", "note": f"{type(e).__name__} (check OCP API/version)"}
+        return {"evidence": "inconclusive", "note": f"{type(e).__name__} (OCP API/version)"}
 
 
-def check_min_wall(mesh, T, shape=None, n_samples=4000):
-    ray = _ray_thickness(mesh, T, n_samples)
-    voxel = _voxel_opening(mesh, T)        # corroboration only
+def _fuse(cone, voxel, T):
+    """Bias-aware fusion. Returns (verdict, confidence, rationale)."""
+    cv = cone.get("verdict")
+    vox = voxel.get("passed")        # True | False | None
+    if cv == "NOT_RUN":
+        if vox is False:
+            return "FAIL", "high", "primary did not run; the voxel over-estimator still fails"
+        return "INDETERMINATE", "low", "the primary cone-SDF could not run on this mesh"
+    if cv == "FAIL":
+        if vox is False:
+            return "FAIL", "high", "cone-SDF and the voxel opening both fail"
+        return "FAIL", "medium", ("cone-SDF fails; voxel passes, which is expected "
+                                  "because the voxel method over-estimates thickness")
+    cone_min = cone.get("min_wall_mm", T)
+    if vox is False and cone_min < 1.5 * T:
+        return "INDETERMINATE", "low", (
+            f"cone-SDF passes but is near the threshold ({cone_min} mm) while the "
+            "voxel opening fails; this needs a human look")
+    return "PASS", "high", "cone-SDF passes"
+
+
+def check_min_wall(mesh, T, shape=None, n_samples=1500):
+    cone = _cone_sdf(mesh, T, n_samples)
+    voxel = _voxel_opening(mesh, T)
     brep = _brep_offset_evidence(shape, T)
-
-    # Ray-cast normal thickness is the sole pass/fail authority. The voxel
-    # opening over-thickens thin features and max_sphere collapses at convex
-    # edges, so neither can be trusted as the verdict.
-    passed = ray.get("passed")
-    reasons = []
-    if passed is False:
-        reasons.append(f"ray thickness: {ray.get('thin_area_fraction')} of the sampled "
-                       f"surface is thinner than {T} mm (min ~{ray.get('min_wall_mm')} mm)")
-    elif passed is None:
-        reasons.append(f"inconclusive: {ray.get('note')}")
-
-    return {"name": "min_wall", "passed": passed, "severity": "fail",
-            "threshold_mm": T, "min_wall_mm": ray.get("min_wall_mm"),
-            "confidence": ray.get("confidence", "unknown"),
-            "methods": {"ray_thickness": ray, "voxel_opening": voxel,
-                        "brep_offset": brep},
-            "reasons": reasons,
+    verdict, confidence, why = _fuse(cone, voxel, T)
+    passed = {"PASS": True, "FAIL": False}.get(verdict)   # INDETERMINATE/NOT_RUN -> None
+    plain = {
+        "FAIL": "this wall will print as a single fragile strand and can snap",
+        "INDETERMINATE": "the wall thickness here is borderline and worth a human check",
+        "PASS": "walls are thick enough to print solidly",
+        "NOT_RUN": "wall thickness could not be measured on this mesh",
+    }[verdict]
+    return {"name": "min_wall", "verdict": verdict, "passed": passed,
+            "severity": "fail", "epistemic_weight": "deterministic",
+            "threshold_mm": T, "min_wall_mm": cone.get("min_wall_mm"),
+            "confidence": confidence, "plain_consequence": plain,
+            "methods": {"cone_sdf": cone, "voxel_opening": voxel, "brep_offset": brep},
+            "reasons": [why],
             "detail": "Walls below the minimum print weak or not at all; thicken or add ribs."}
 
 
