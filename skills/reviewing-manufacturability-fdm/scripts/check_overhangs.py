@@ -13,14 +13,22 @@ def check_overhangs(mesh, max_overhang_deg=45.0, build_dir=(0, 0, 1)):
     nz = n @ bz                                   # normal component along build dir
     down = nz < -1e-6                             # downward-facing faces only
 
+    # Faces lying in the build-plane floor sit on the bed and are supported by
+    # it, so a flat bottom is not an overhang. Exclude downward faces whose
+    # centroid is at the minimum height along the build direction.
+    cz = mesh.triangles_center @ bz
+    diag = float(np.linalg.norm(mesh.extents)) or 1.0
+    on_bed = cz <= (cz.min() + max(1e-3, 1e-4 * diag))
+    consider = down & ~on_bed
+
     # angle of the surface from vertical = arcsin(|nz|)  (normal _|_ surface)
     oh_deg = np.degrees(np.arcsin(np.clip(np.abs(nz), 0.0, 1.0)))
-    violating = down & (oh_deg > max_overhang_deg)
+    violating = consider & (oh_deg > max_overhang_deg)
 
     viol_area = float(areas[violating].sum())
     return {"name": "overhangs", "passed": bool(viol_area <= 1e-6),
             "severity": "warning", "threshold_deg_from_vertical": max_overhang_deg,
-            "worst_overhang_deg": round(float(oh_deg[down].max()) if down.any() else 0.0, 1),
+            "worst_overhang_deg": round(float(oh_deg[consider].max()) if consider.any() else 0.0, 1),
             "overhanging_area_mm2": round(viol_area, 2),
             "downward_area_mm2": round(float(areas[down].sum()), 2),
             "detail": ("Surfaces steeper than the threshold need support or redesign; "
