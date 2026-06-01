@@ -57,24 +57,25 @@ You can also import any single gate:
 review — trimesh volume/inertia are meaningless on it, so nothing downstream can be trusted.
 Fix the geometry before anything else.
 
-**min_wall** (hard fail). Three methods with deliberately different roles:
-- *ray thickness* — the authoritative pass/fail. From even surface samples it casts a ray
-  inward along the −normal to the opposite wall; that distance is the local wall thickness.
-  Unlike a max-inscribed-sphere it does **not** collapse at convex edges (a solid cube reads
-  its full width everywhere), so no corner-exclusion heuristics are needed. The reported
-  `min_wall_mm` is a robust p1 of those samples, and `thin_locations_mm` points at the thin
-  regions. Fails when a meaningful fraction of the sampled surface — above a small
-  spurious-ray floor — is thinner than T.
-- *voxel opening* — CORROBORATING only, never the verdict. Tests whether a ball of radius T/2
-  fits everywhere (morphological opening via a padded distance transform). trimesh's
-  `voxelized().fill()` over-thickens thin features by ~1–2 cells, so on its own it can miss a
-  genuinely thin wall — it is reported but does not decide.
-- *brep offset* — EXPERIMENTAL positive-evidence only (inward offset of T/2). OCCT offset is
-  fragile; success is weak evidence walls ≥ T, failure is **inconclusive and never a fail**.
-- Verdict rule: fail if ray thickness finds a sub-T region above the noise floor; pass if not;
-  `null` (inconclusive) only if sampling/ray-casting could not run. `confidence` is `high`
-  whenever rays ran; the voxel method still notes `low` confidence on large parts where its
-  pitch was coarsened.
+**min_wall** (hard fail). Three methods with deliberately different roles, fused by bias:
+- *cone-SDF* is the authoritative pass/fail. From even surface samples it casts a small cone
+  of inward rays (a Shape-Diameter-Function sample) and takes the per-point median of the
+  surviving ray lengths as the local wall thickness. The cone plus the median reject the
+  grazing ray and the concave wraparound that fool a single inward ray, so no corner-exclusion
+  heuristics are needed and a solid cube reads its full width. The reported `min_wall_mm` is a
+  robust p1, and a part fails when a meaningful fraction of the sampled surface, above a small
+  spurious-ray floor, is thinner than T.
+- *voxel opening* corroborates only and never decides. It tests whether a ball of radius T/2
+  fits everywhere (a morphological opening via a padded distance transform). Because
+  `voxelized().fill()` over-thickens thin features by one or two cells, the voxel method
+  over-estimates thickness, so its FAIL is strong evidence and its PASS is weak.
+- *brep offset* is experimental positive-evidence only (an inward OCCT offset of T/2). Success
+  is weak evidence that walls are at least T; failure is inconclusive and is never a fail.
+- Verdict rule (bias-aware): a cone-SDF FAIL is a FAIL, with high confidence when the voxel
+  opening also fails. A cone-SDF PASS is a PASS unless the voxel opening fails while the cone
+  reading sits near the threshold, in which case the gate returns INDETERMINATE rather than a
+  silent pass. The verdict uses the shared vocabulary PASS, FAIL, INDETERMINATE, or NOT_RUN,
+  and the result also carries an `epistemic_weight` and a `plain_consequence` string.
 
 **overhangs** (warning, not hard fail). Measures each downward-facing surface's angle from
 vertical and flags area steeper than the printer's safe threshold (45° generic, 60–75° on
@@ -100,6 +101,22 @@ Hand these back to `generating-build123d` as concrete edits:
   downward edges; only then fall back to support.
 - enclosed void → add a vent hole (≥ 3 mm) at the reported centroid.
 - build_volume fail → split the part, scale down, or reorient (use the OBB hint).
+
+## Loop control and stop conditions
+The outer regenerate-and-reverify loop MUST terminate. Evaluate these conditions after each
+verification and act on the first that applies:
+1. **Convergence.** When all invariants pass and the verification `overall_verdict` is `PASS`,
+   STOP; the part is done.
+2. **Max iterations.** STOP after at most 5 outer regenerate-and-reverify iterations.
+3. **No improvement (stuck).** Hash the sorted set of failing gate names each iteration; if it
+   is identical to the previous iteration, the loop is stuck, so STOP and escalate instead of
+   trying another fix.
+4. **Regression.** If the number of failures grows after an edit, that edit made things worse;
+   revert to the previous version and escalate.
+
+To escalate, state to the user the specific decision that is needed, then stop making changes
+and wait for their input. There is no paused-loop primitive, so escalation is just a clear
+hand-back.
 
 ## Caveats
 - **Orientation matters.** Overhang and build-volume gates assume the part is already

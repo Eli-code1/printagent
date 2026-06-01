@@ -71,6 +71,22 @@ names the exact edit for each failure. Iterate on `fix_list` until `manufacturab
 applying the report's stop conditions: stop when converged, when K iterations pass with no
 improvement, or when the budget is spent — then escalate to a human.
 
+## Loop control and stop conditions
+The outer regenerate-and-reverify loop MUST terminate. Evaluate these conditions after each
+verification and act on the first that applies:
+1. **Convergence.** When all invariants pass and the verification `overall_verdict` is `PASS`,
+   STOP; the part is done.
+2. **Max iterations.** STOP after at most 5 outer regenerate-and-reverify iterations.
+3. **No improvement (stuck).** Hash the sorted set of failing gate names each iteration; if it
+   is identical to the previous iteration, the loop is stuck, so STOP and escalate instead of
+   trying another fix.
+4. **Regression.** If the number of failures grows after an edit, that edit made things worse;
+   revert to the previous version and escalate.
+
+To escalate, state to the user the specific decision that is needed, then stop making changes
+and wait for their input. There is no paused-loop primitive, so escalation is just a clear
+hand-back.
+
 ## Failure → edit
 - `min_wall` → `shell(part, t)` with a larger `t`, add ribs/gussets, or thicken the named region;
   thin-region coordinates are in the gate's `thin_locations_mm`.
