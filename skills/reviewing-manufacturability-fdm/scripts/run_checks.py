@@ -36,13 +36,16 @@ def run(path, printer="generic", nozzle=0.4, layer_height=0.2, profile="structur
         check_build_volume(mesh, prof["bed_mm"], prof["usable_margin_mm"]),
     ]
 
+    gates = [_normalize(g) for g in gates]
     hard_fail = [g for g in gates if g.get("severity") == "fail" and g.get("passed") is False]
     soft = [g for g in gates if g.get("passed") is not True and g not in hard_fail]
     manufacturable = (len(hard_fail) == 0) and bool(health["watertight"])
+    overall = "FAIL" if hard_fail else ("WARNING" if soft else "PASS")
 
     return {
         "part": path,
         "manufacturable": manufacturable,
+        "overall_verdict": overall,
         "params": th.to_dict(),
         "printer": printer,
         "mesh_health": health,
@@ -51,6 +54,19 @@ def run(path, printer="generic", nozzle=0.4, layer_height=0.2, profile="structur
         "gates_failed": [g["name"] for g in hard_fail],
         "warnings": [g["name"] for g in soft],
     }
+
+
+def _normalize(g):
+    """Ensure every gate carries the shared verdict vocabulary and an epistemic
+    weight, so plain_report and downstream skills read one consistent schema.
+    PASS | FAIL | WARNING | INDETERMINATE | NOT_RUN."""
+    if "verdict" not in g:
+        p = g.get("passed")
+        g["verdict"] = ("PASS" if p is True else "INDETERMINATE" if p is None
+                        else ("FAIL" if g.get("severity") == "fail" else "WARNING"))
+    g.setdefault("epistemic_weight",
+                 "deterministic" if g.get("severity") == "fail" else "heuristic_advisory")
+    return g
 
 
 if __name__ == "__main__":
