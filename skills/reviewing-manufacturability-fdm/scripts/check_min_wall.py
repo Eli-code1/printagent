@@ -99,7 +99,11 @@ def _cone_sdf(mesh, T, n_samples=1500, k=6, half_angle_deg=60.0):
     thin = med < (T - _TOL)
     thin_count = int(thin.sum())
     valid = len(med)
-    noise = max(3, int(0.005 * valid))
+    # Acute convex edges yield a small fraction of spurious thin readings even on
+    # thick parts, so tolerate up to ~1.5% before failing. A genuinely thin wall
+    # paints far more: in the regression corpus the thin cases all exceed 90% and
+    # the thinnest meaningful case is about 5%, so this floor sits well clear.
+    noise = max(3, int(0.015 * valid))
     verdict = "FAIL" if thin_count > noise else "PASS"
     return {"verdict": verdict, "passed": (verdict == "PASS"),
             "min_wall_mm": round(float(np.percentile(med, 1)), 3),
