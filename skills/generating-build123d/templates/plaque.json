@@ -1,0 +1,15 @@
+{
+  "id": "plaque",
+  "family": "plaque",
+  "intent": "A flat plaque or sign with a raised border and a hang hole, for a name, label, number, or decoration.",
+  "keywords": ["plaque", "sign", "nameplate", "label plate", "door sign", "badge", "wall plate", "number plate"],
+  "parameters": {
+    "width": {"default": 100.0, "units": "mm", "desc": "plaque width"},
+    "height": {"default": 70.0, "units": "mm", "desc": "plaque height"},
+    "thickness": {"default": 3.0, "units": "mm", "desc": "plate thickness"},
+    "border": {"default": 4.0, "units": "mm", "desc": "border width"},
+    "border_h": {"default": 2.0, "units": "mm", "desc": "raised border height"},
+    "hang_dia": {"default": 6.0, "units": "mm", "desc": "hang-hole diameter"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}

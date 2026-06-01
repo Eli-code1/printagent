@@ -26,9 +26,16 @@ a JSON metadata sidecar. Every template here is proven to pass the manufacturabi
    then `reviewing-manufacturability-fdm` runs the full gate.
 
 ## Current templates
+All nine families the plain-language router can propose now have a module here.
 - `bracket`: a wall-mount L bracket, gusseted, with holes in both legs.
 - `holder`: an open-top holder or organizer.
 - `box_with_lid`: a two-part box with a friction-fit lid.
+- `hook`: a wall hook with a screw-through back plate.
+- `adapter`: a tubular sleeve or coupler with a through bore.
+- `mounting_plate`: a flat plate with a grid of screw holes.
+- `tray`: a shallow open-top tray with optional dividers.
+- `stand`: an angled stand for a phone, tablet, or sign.
+- `plaque`: a flat plaque with a raised border and a hang hole.
 
 ## Adding a template
 Write `<id>.py` with a `build(spec)` that composes the helpers, add `<id>.json`, then run

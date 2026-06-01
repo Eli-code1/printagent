@@ -1,0 +1,16 @@
+{
+  "id": "mounting_plate",
+  "family": "mounting_plate",
+  "intent": "A flat plate with a grid of screw holes for mounting a device or fixing one surface to another.",
+  "keywords": ["mounting plate", "mount plate", "base plate", "fixing plate", "panel", "plate with holes", "backplate"],
+  "parameters": {
+    "width": {"default": 80.0, "units": "mm", "desc": "plate width"},
+    "depth": {"default": 60.0, "units": "mm", "desc": "plate depth"},
+    "thickness": {"default": 4.0, "units": "mm", "desc": "plate thickness"},
+    "nx": {"default": 3, "desc": "holes across the width"},
+    "ny": {"default": 2, "desc": "holes across the depth"},
+    "margin": {"default": 10.0, "units": "mm", "desc": "hole inset from the edge"},
+    "screw": {"default": "M4", "desc": "screw size"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}

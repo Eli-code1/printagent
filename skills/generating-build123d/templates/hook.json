@@ -1,0 +1,15 @@
+{
+  "id": "hook",
+  "family": "hook",
+  "intent": "A wall-mounted hook with a screw-through back plate and an upturned tip to hold bags, cables, tools, or keys.",
+  "keywords": ["hook", "wall hook", "coat hook", "key hook", "peg", "hanger", "cup hook"],
+  "parameters": {
+    "back_w": {"default": 25.0, "units": "mm", "desc": "back plate width"},
+    "back_h": {"default": 45.0, "units": "mm", "desc": "back plate height"},
+    "thickness": {"default": 4.0, "units": "mm", "desc": "material thickness"},
+    "arm_len": {"default": 28.0, "units": "mm", "desc": "how far the hook projects"},
+    "tip_h": {"default": 18.0, "units": "mm", "desc": "upturned tip height"},
+    "screw": {"default": "M4", "desc": "mounting screw size"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}
