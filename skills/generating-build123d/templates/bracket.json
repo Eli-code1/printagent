@@ -1,0 +1,18 @@
+{
+  "id": "bracket",
+  "family": "bracket",
+  "intent": "A wall-mount L bracket that fastens one surface to another at a right angle, braced by a gusset, with mounting holes in both legs.",
+  "keywords": ["bracket", "angle bracket", "l bracket", "l-bracket", "wall mount",
+               "shelf bracket", "corner brace", "mount", "right angle"],
+  "parameters": {
+    "width": {"default": 30.0, "units": "mm", "desc": "flange width"},
+    "base_len": {"default": 40.0, "units": "mm", "desc": "base flange length"},
+    "wall_height": {"default": 35.0, "units": "mm", "desc": "upright flange height"},
+    "thickness": {"default": 3.0, "units": "mm", "desc": "material thickness"},
+    "screw": {"default": "M3", "desc": "mounting screw size"},
+    "base_holes": {"default": 2, "desc": "holes in the base flange"},
+    "wall_holes": {"default": 2, "desc": "holes in the upright flange"},
+    "gusset": {"default": true, "desc": "add a corner gusset brace"}
+  },
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}

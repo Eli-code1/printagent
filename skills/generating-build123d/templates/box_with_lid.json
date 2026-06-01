@@ -1,0 +1,19 @@
+{
+  "id": "box_with_lid",
+  "family": "box_with_lid",
+  "intent": "A two-part box with a friction-fit lid, sized by its inner cavity, for storing small items.",
+  "keywords": ["box", "box with lid", "lidded box", "case", "enclosure", "storage box",
+               "container with lid", "stash box", "parts box"],
+  "parameters": {
+    "inner_w": {"default": 60.0, "units": "mm", "desc": "inside width"},
+    "inner_d": {"default": 40.0, "units": "mm", "desc": "inside depth"},
+    "inner_h": {"default": 30.0, "units": "mm", "desc": "inside height"},
+    "wall": {"default": 2.5, "units": "mm", "desc": "wall thickness"},
+    "base": {"default": 2.5, "units": "mm", "desc": "floor thickness"},
+    "lid_h": {"default": 3.0, "units": "mm", "desc": "lid plate thickness"},
+    "lip_h": {"default": 4.0, "units": "mm", "desc": "locating plug height"},
+    "clearance": {"default": 0.2, "units": "mm", "desc": "lid-to-box fit gap"}
+  },
+  "parts": ["build", "build_lid"],
+  "invariants": {"solid_count": 1, "watertight": true, "planar_bottom": true}
+}
