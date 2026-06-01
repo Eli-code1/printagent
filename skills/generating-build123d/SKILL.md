@@ -40,8 +40,10 @@ the assumption inline**, and proceed, do not stall the loop on clarification.
 - **Never mix import styles.** Pick `from build123d import *` *or* `import build123d as bd`
   for the whole part. Pin the build123d version, the export/import APIs are version-sensitive.
 - **Compose the helpers.** `heatset_boss`, `clearance_hole`, `shell`, `chamfer_bottom_edges`,
-  `add_vent`, `mouse_ears` (in `dfm_helpers.py`) already encode the rule numbers. Reach for them
-  before hand-modelling a boss, hole, shell, or vent.
+  `add_vent`, `mouse_ears`, and the fastener and feature set (`counterbore_hole`,
+  `countersink_hole`, `tap_hole`, `captive_nut_pocket`, `add_standoff`, `add_rib`,
+  `add_gusset`, `slot_hole`) in `dfm_helpers.py` already encode the rule numbers. Reach for
+  them before hand-modelling a boss, hole, shell, recess, rib, or vent.
 - **Defer fillets and chamfers to the end** of the build, they are the most kernel-fragile op
   and applying them last avoids invalidating earlier selections.
 
@@ -70,6 +72,17 @@ The script exports the part, invokes the gate, and prints a combined result whos
 names the exact edit for each failure. Iterate on `fix_list` until `manufacturable` is true,
 applying the report's stop conditions: stop when converged, when K iterations pass with no
 improvement, or when the budget is spent, then escalate to a human.
+
+## Cheap invariant pre-gate (run before the expensive gate)
+Fill the `Invariants` block of the `PartSpec` (expected bounding box, volume with a tolerance,
+solid count, through-hole count, watertightness, and a planar bottom), then check the built
+part against it first:
+
+    python scripts/run_invariants.py my_part.stl spec.json
+
+It runs in a few milliseconds and returns a `fix_list`. Send only candidates that pass on to
+the expensive `reviewing-manufacturability-fdm` gate; this filters out obviously-wrong
+generations (wrong size, missing or extra bodies, wrong hole count) before any heavy compute.
 
 ## Loop control and stop conditions
 The outer regenerate-and-reverify loop MUST terminate. Evaluate these conditions after each
