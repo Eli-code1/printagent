@@ -49,7 +49,10 @@ def _score(mesh, max_overhang_deg, load_dir=None):
     on_bed = cz <= mesh.bounds[0][2] + max(1e-3, 1e-4 * diag)
     down = nz < -1e-6
     oh_deg = np.degrees(np.arcsin(np.clip(np.abs(nz), 0.0, 1.0)))
-    overhang_area = float(areas[down & ~on_bed & (oh_deg > max_overhang_deg)].sum())
+    consider = down & ~on_bed                            # downward, not on the bed
+    overhang_area = float(areas[consider & (oh_deg > max_overhang_deg)].sum())
+    worst = float(oh_deg[consider].max()) if consider.any() else 0.0
+    downfacing = float(areas[consider].sum())
     bed_area = float(areas[down & on_bed].sum())
     height = float(mesh.extents[2])
     total = float(mesh.area) or 1.0
@@ -61,8 +64,14 @@ def _score(mesh, max_overhang_deg, load_dir=None):
             ld = ld / np.linalg.norm(ld)
             load_pen = 0.5 * abs(float(ld[2]))     # load along +Z = across layers = weak
     score = (overhang_area / total) - 0.4 * (bed_area / total) + 0.15 * (height / diag) + load_pen
+    # A near-threshold worst angle means a small change in the overhang setting flips
+    # the verdict; flag it so a generous threshold cannot present it as a clean zero.
+    borderline = bool((max_overhang_deg - 6.0) <= worst <= max_overhang_deg)
     return {"score": round(score, 4),
             "overhang_area_mm2": round(overhang_area, 1),
+            "worst_overhang_deg": round(worst, 1),
+            "borderline": borderline,
+            "downfacing_area_mm2": round(downfacing, 1),
             "bed_contact_mm2": round(bed_area, 1),
             "height_mm": round(height, 1)}
 
@@ -99,7 +108,13 @@ def main():
         m.apply_transform(np.array(best["matrix"]))
         m.apply_translation([0, 0, -m.bounds[0][2]])
         m.export(a.out)
+    if best.get("borderline"):
+        print(f"NOTE: the best orientation is borderline. Its steepest overhang is "
+              f"{best['worst_overhang_deg']} deg, just under the {a.max_overhang} deg "
+              f"threshold, so a stricter setting would flag it. Verify in a slicer.",
+              file=sys.stderr)
     print(json.dumps({"best": best, "alternatives": ranked[1:5],
+                      "threshold_deg": a.max_overhang,
                       "candidates_evaluated": len(ranked)}, indent=2))
 
 

@@ -39,16 +39,21 @@ default and overrule it when a cosmetic face or a known support trick matters.
     python scripts/orient.py PART.stl --max-overhang 45 --out oriented.stl
 
 - `PART.stl` is the part to orient (STL or any mesh trimesh reads).
-- `--max-overhang` is the printer's safe overhang angle from vertical (read it from
-  the printer profile; 45 is a safe generic default, 60 to 75 on part-cooled machines).
+- `--max-overhang` is the printer's safe overhang angle from vertical. The default 45
+  is deliberately conservative; a part-cooled machine like the X1C can hold 55 to 65,
+  but raising it is optimistic and hides marginal overhangs, so prefer the conservative
+  number for the recommendation and treat a higher one as best-case only.
 - `--load X,Y,Z` (optional) is the principal load direction in the part's own frame;
   pass it to bias toward printing strong against that load.
 - `--out` writes the best-oriented STL, dropped onto z = 0.
 
 It prints JSON: the `best` orientation and the next few `alternatives`, each with the
-4x4 `matrix`, the `euler_deg`, the `overhang_area_mm2`, the `bed_contact_mm2`, and the
-`height_mm`. Pass `best.matrix` to the downstream steps as the print transform, and
-record the `euler_deg` so the choice is legible.
+4x4 `matrix`, the `euler_deg`, the `overhang_area_mm2`, the `worst_overhang_deg`, a
+`borderline` flag, the `downfacing_area_mm2`, the `bed_contact_mm2`, and the `height_mm`.
+A zero `overhang_area_mm2` whose `worst_overhang_deg` sits just under the threshold is
+marked `borderline`: it passed only because of the threshold, so verify it in a slicer
+rather than trusting it. Pass `best.matrix` to the downstream steps as the print
+transform, and record the `euler_deg` so the choice is legible.
 
 ## What to hand downstream
 - To `reviewing-manufacturability-fdm` and `reviewing-structural-loads`: the oriented
