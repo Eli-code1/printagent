@@ -12,12 +12,13 @@ This repository is both a plugin and its own marketplace, so it installs by name
 
 | Skill | What it does | Python deps |
 |-------|--------------|:---:|
-| `generating-build123d` | Authors and edits parametric parts as build123d (Python/OCCT) code, then exports STEP and STL. | yes |
-| `reviewing-manufacturability-fdm` | Runs the deterministic DFM gates (minimum wall by ray-cast thickness, overhang angle, enclosed or undrained voids, and build-volume fit) and writes `verification.json`. | yes |
+| `generating-build123d` | Authors and edits parametric parts as build123d (Python/OCCT) code, composing vetted DFM primitives and known-good part templates, then exports STEP and STL. | yes |
+| `orienting-for-fdm` | Chooses which way up to print a part to minimize overhangs and support, maximize bed adhesion, and keep a load along the layers; writes the print transform. | yes |
+| `reviewing-manufacturability-fdm` | Runs the deterministic DFM gates (minimum wall by cone-SDF thickness, overhang angle, enclosed or undrained voids, and build-volume fit) and writes `verification.json`. | yes |
 | `reviewing-structural-loads` | Checks load direction against the layer plane, finds the weakest cross-section, flags stress risers, and reports mass, center of mass, and inertia into `structural_review.json`. | yes |
 | `slicing-handoff-bambu` | Packages a verified part into a millimetre 3MF, an archival STEP, and a manifest, with an optional Bambu Studio CLI slice. | yes |
 | `analyzing-print-failures` | Diagnoses a failed print (warping, stringing, layer shift, and the rest) and routes the fix. | no, stdlib |
-| `designing-in-plain-language` | An opt-in mode that asks only the questions that matter, in plain words, and explains the gate and review results without jargon. It wraps the five skills above. | no, stdlib |
+| `designing-in-plain-language` | An opt-in mode that asks only the questions that matter, in plain words, and explains the gate and review results without jargon. It wraps the other skills. | no, stdlib |
 
 ## Install
 
@@ -48,7 +49,8 @@ installed, since they run on the Python standard library alone.
 ## How the loop fits together
 
 The loop has a clear spine. You describe a part, and `generating-build123d` turns it into
-build123d code. `reviewing-manufacturability-fdm` then runs the hard gates, and
+build123d code. `orienting-for-fdm` then chooses which way up to print it, and
+`reviewing-manufacturability-fdm` runs the hard gates on that orientation while
 `reviewing-structural-loads` checks whether the part survives its load. Every gate failure goes
 back to `generating-build123d` as a concrete edit, so the loop keeps tightening until the part is
 both modelled and verified-printable. Once it passes, `slicing-handoff-bambu` packages it for the
