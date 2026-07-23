@@ -2,13 +2,13 @@
   "function": "Fit-check coupon: two kite ribs that drop into the Apollo fan's tapered base slots; verifies the connector before the full tripod sled",
   "envelope_mm": [58, 30, 8],
   "driving_dims": {
-    "slot_center_x": 23.0,
+    "rib_gap_at_peak": 40.0,
     "slot_peak_d": 8.85,
     "slot_peak_w": 4.65,
     "slot_taper_slope": 0.10,
     "rib_len": 22.0,
     "rib_h": 2.0,
-    "clearance_side": 0.30,
+    "clearance_side": 0.05,
     "plate": [54.0, 26.0, 2.4]
   },
   "fits": [
@@ -28,7 +28,7 @@
   "invariants": {
     "bbox_min_mm": [53.0, 25.0, 4.2],
     "bbox_max_mm": [55.0, 27.0, 4.6],
-    "volume_mm3": 3627,
+    "volume_mm3": 3670,
     "volume_tol": 0.15,
     "solid_count": 1,
     "hole_count": 0,

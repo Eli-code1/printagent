@@ -19,16 +19,19 @@ from build123d import (Align, Axis, Box, Polygon, Pos, chamfer, extrude)
 
 PARAMS = dict(
     # measured slot geometry (per side, mm)
-    slot_center_x=23.0,        # slot centerline offset from fan centerline (~46 c-c)
     slot_front_w=4.0,          # width at the slot's front end (ASSUMED, unmeasured)
     slot_peak_d=8.85,          # peak distance from the slot's front end
     slot_peak_w=4.65,          # the kite's widest point (4.6-4.7 measured)
     slot_taper_slope=0.10,     # mm of width lost per mm behind the peak
     slot_depth=2.75,           # below the fan's base plane
     # rib (the mating feature)
+    rib_gap_at_peak=40.0,      # inner-edge gap between the ribs AT THE PEAK; the
+                               # datum Eli measured on the fan after print #1
     rib_len=22.0,              # engage front+peak zone only; long thin tail ignored
     rib_h=2.0,                 # 0.75 mm shy of slot_depth: never bottoms out
-    clearance_side=0.30,       # per-side fit clearance; THE fit-test knob
+    clearance_side=0.05,       # per-side fit clearance; THE fit-test knob
+                               # (print #1 @0.30 sat ~1mm too far out and loose;
+                               #  0.05 widens each rib 0.5 mm at the peak)
     # plate (slim test bridge)
     plate_w=54.0,              # across (X)
     plate_d=26.0,              # front-to-back (Y)
@@ -64,8 +67,11 @@ def build(spec: dict | None = None):
     plate = Box(p["plate_w"], p["plate_d"], p["plate_t"],
                 align=(Align.CENTER, Align.CENTER, Align.MIN))
     part = plate
-    # ribs centered on the plate; rib front end = slot front end
-    for sx in (-p["slot_center_x"], p["slot_center_x"]):
+    # rib centerline from the inner-gap datum: inner edges at the peak sit at
+    # +/- rib_gap_at_peak/2, whatever the clearance does to the width
+    rib_peak_w = slot_width(p, p["slot_peak_d"]) - 2 * p["clearance_side"]
+    cx = p["rib_gap_at_peak"] / 2.0 + rib_peak_w / 2.0
+    for sx in (-cx, cx):
         part += Pos(sx, 0.0, p["plate_t"]) * _rib(p)
     # FRONT marker: notch cut into the center of the front (+Y) edge
     part -= Pos(0, p["plate_d"] / 2 - p["notch_d"] / 2, 0) * Box(
