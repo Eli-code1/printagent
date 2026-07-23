@@ -30,3 +30,15 @@ One knob: `clearance_side` in `PARAMS` (default 0.30 mm per side).
 - Too tight / won't seat: raise it by 0.10 -> 0.40
 - Rattles / slides: lower it by 0.10 -> 0.20
 Rebuild: `../../.venv/bin/python ../../skills/generating-build123d/scripts/build_and_check.py coupon.py --printer bambu_x1c --profile structural --gate-dir ../../skills/reviewing-manufacturability-fdm/scripts --stem coupon`
+
+---
+
+# Full sled (phase 2): sled.py / sled.step / sled.stl
+
+Uniform 56 x 38 x 10 mm slab; calibrated ribs (gap 40.3, clearance 0.15) on top,
+blind printed 1/4-20 socket (major 6.5, 5.5 turns) underneath at the balance
+point. Prints as exported, plate down, NO supports (the socket's flat ceiling is
+a 6.5 mm bridge; any slicer handles it). PETG, 0.2 mm layers, 4+ walls.
+The gate passes; the overhang warning is the internal thread itself, which is
+normal and printable. First time in: run the tripod screw in once to shave the
+thread crests; it cuts smoother every turn after.

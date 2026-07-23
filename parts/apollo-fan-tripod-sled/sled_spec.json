@@ -1,0 +1,41 @@
+{
+  "function": "Full tripod sled: calibrated kite ribs engage the Apollo fan's base slots; blind printed 1/4-20 socket beneath the balance point mates any camera tripod",
+  "envelope_mm": [60, 42, 14],
+  "driving_dims": {
+    "rib_gap_at_peak": 40.3,
+    "slot_peak_d": 8.85,
+    "slot_peak_w": 4.65,
+    "slot_taper_slope": 0.1,
+    "rib_len": 22.0,
+    "rib_h": 2.0,
+    "clearance_side": 0.15,
+    "slab": [56.0, 38.0, 10.0],
+    "thread": "1/4-20 UNC, major 6.5 printed fit, 5.5 turns"
+  },
+  "fits": [
+    {"feature": "kite rib into tapered base slot", "kind": "clearance", "nominal_mm": 0.15},
+    {"feature": "1/4-20 tripod screw into printed thread", "kind": "fastened", "nominal_mm": 0.15}
+  ],
+  "principal_load": "fan weight + tripod clamp preload, along -Z through the thread; lateral hand nudges in XY",
+  "printer": "bambu_x1c",
+  "material": "PETG",
+  "nozzle_mm": 0.4,
+  "layer_height_mm": 0.2,
+  "profile": "structural",
+  "assumptions": [
+    "slot width at its very front end is 4.0 mm (not yet measured)",
+    "fan balance point ~ half the box depth on the centerline",
+    "uniform 10 mm slab replaces the spec's plate+boss for support-free printing"
+  ],
+  "invariants": {
+    "bbox_min_mm": [55.0, 37.0, 11.5],
+    "bbox_max_mm": [57.0, 39.0, 12.5],
+    "volume_mm3": 21190,
+    "volume_tol": 0.15,
+    "solid_count": 1,
+    "hole_count": 0,
+    "watertight": true,
+    "planar_bottom": true,
+    "named_features": ["two kite ribs on top", "front-edge center notch", "blind 1/4-20 socket underneath"]
+  }
+}

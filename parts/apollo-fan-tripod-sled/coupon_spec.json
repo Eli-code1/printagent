@@ -6,7 +6,7 @@
     8
   ],
   "driving_dims": {
-    "rib_gap_at_peak": 40.2,
+    "rib_gap_at_peak": 40.3,
     "slot_peak_d": 8.85,
     "slot_peak_w": 4.65,
     "slot_taper_slope": 0.1,
