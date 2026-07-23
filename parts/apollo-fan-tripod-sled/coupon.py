@@ -25,8 +25,9 @@ PARAMS = dict(
     slot_taper_slope=0.10,     # mm of width lost per mm behind the peak
     slot_depth=2.75,           # below the fan's base plane
     # rib (the mating feature)
-    rib_gap_at_peak=40.0,      # inner-edge gap between the ribs AT THE PEAK; the
-                               # datum Eli measured on the fan after print #1
+    rib_gap_at_peak=40.1,      # inner-edge gap between the ribs AT THE PEAK; datum
+                               # Eli measured 40.0 on the fan after print #1, then
+                               # asked for +0.1 after the print #3 fit
     rib_len=22.0,              # engage front+peak zone only; long thin tail ignored
     rib_h=2.0,                 # 0.75 mm shy of slot_depth: never bottoms out
     clearance_side=0.15,       # per-side fit clearance; THE fit-test knob
