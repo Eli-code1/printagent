@@ -1,0 +1,36 @@
+{
+  "function": "Fit-check coupon: two kite ribs that drop into the Apollo fan's tapered base slots; verifies the connector before the full tripod sled",
+  "envelope_mm": [60, 48, 8],
+  "driving_dims": {
+    "slot_center_x": 23.0,
+    "rib_len": 30.0,
+    "rib_h": 2.0,
+    "clearance_side": 0.30,
+    "plate": [56.0, 44.0, 3.0]
+  },
+  "fits": [
+    {"feature": "kite rib into tapered base slot", "kind": "clearance", "nominal_mm": 0.30}
+  ],
+  "principal_load": "negligible; hand insertion/removal, lateral nudges in XY",
+  "printer": "bambu_x1c",
+  "material": "PETG",
+  "nozzle_mm": 0.4,
+  "layer_height_mm": 0.2,
+  "profile": "structural",
+  "assumptions": [
+    "slot width at its very front end is 4.0 mm (not yet measured)",
+    "fan base plane is flat and co-planar across label platform and foot recesses",
+    "slot walls are vertical (no draft measured)"
+  ],
+  "invariants": {
+    "bbox_min_mm": [55.0, 43.0, 4.8],
+    "bbox_max_mm": [57.0, 45.0, 5.2],
+    "volume_mm3": 7740,
+    "volume_tol": 0.15,
+    "solid_count": 1,
+    "hole_count": 0,
+    "watertight": true,
+    "planar_bottom": true,
+    "named_features": ["two kite ribs on top", "front corner chamfers"]
+  }
+}
