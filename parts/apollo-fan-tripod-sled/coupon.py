@@ -29,9 +29,9 @@ PARAMS = dict(
                                # datum Eli measured on the fan after print #1
     rib_len=22.0,              # engage front+peak zone only; long thin tail ignored
     rib_h=2.0,                 # 0.75 mm shy of slot_depth: never bottoms out
-    clearance_side=0.05,       # per-side fit clearance; THE fit-test knob
+    clearance_side=0.15,       # per-side fit clearance; THE fit-test knob
                                # (print #1 @0.30 sat ~1mm too far out and loose;
-                               #  0.05 widens each rib 0.5 mm at the peak)
+                               #  0.15 widens each rib 0.3 mm at the peak)
     # plate (slim test bridge)
     plate_w=54.0,              # across (X)
     plate_d=26.0,              # front-to-back (Y)

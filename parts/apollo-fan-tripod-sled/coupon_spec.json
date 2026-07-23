@@ -1,18 +1,30 @@
 {
   "function": "Fit-check coupon: two kite ribs that drop into the Apollo fan's tapered base slots; verifies the connector before the full tripod sled",
-  "envelope_mm": [58, 30, 8],
+  "envelope_mm": [
+    58,
+    30,
+    8
+  ],
   "driving_dims": {
     "rib_gap_at_peak": 40.0,
     "slot_peak_d": 8.85,
     "slot_peak_w": 4.65,
-    "slot_taper_slope": 0.10,
+    "slot_taper_slope": 0.1,
     "rib_len": 22.0,
     "rib_h": 2.0,
-    "clearance_side": 0.05,
-    "plate": [54.0, 26.0, 2.4]
+    "clearance_side": 0.15,
+    "plate": [
+      54.0,
+      26.0,
+      2.4
+    ]
   },
   "fits": [
-    {"feature": "kite rib into tapered base slot", "kind": "clearance", "nominal_mm": 0.30}
+    {
+      "feature": "kite rib into tapered base slot",
+      "kind": "clearance",
+      "nominal_mm": 0.15
+    }
   ],
   "principal_load": "negligible; hand insertion/removal, lateral nudges in XY",
   "printer": "bambu_x1c",
@@ -26,14 +38,25 @@
     "slot walls are vertical (no draft measured)"
   ],
   "invariants": {
-    "bbox_min_mm": [53.0, 25.0, 4.2],
-    "bbox_max_mm": [55.0, 27.0, 4.6],
-    "volume_mm3": 3670,
+    "bbox_min_mm": [
+      53.0,
+      25.0,
+      4.2
+    ],
+    "bbox_max_mm": [
+      55.0,
+      27.0,
+      4.6
+    ],
+    "volume_mm3": 3653,
     "volume_tol": 0.15,
     "solid_count": 1,
     "hole_count": 0,
     "watertight": true,
     "planar_bottom": true,
-    "named_features": ["two kite ribs on top", "front-edge center notch"]
+    "named_features": [
+      "two kite ribs on top",
+      "front-edge center notch"
+    ]
   }
 }
