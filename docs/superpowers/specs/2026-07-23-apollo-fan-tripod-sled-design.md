@@ -24,8 +24,11 @@ foot recesses, which are co-planar ("base plane"). Front = grille face.
   - Slot front end 10.15 mm from the front edge; length ~43-44 mm; back tip lands
     ~10.3 mm from the back edge (near-symmetric, cross-checked and confirmed by Eli).
   - Kite (lens) plan profile: ~4.0 mm wide at the front end (ASSUMED, not yet measured),
-    widening to the peak 4.60 mm at ~19 mm from the slot front, back to ~4.0 mm at
-    ~27 mm, then a long taper to 1.35 mm at the back tip.
+    widening to the peak 4.65 mm (4.6-4.7 measured) at 19 mm from the BOX front edge,
+    i.e. ~8.85 mm past the slot's own front end; then a straight taper losing 0.10 mm
+    of width per mm over ~35 mm to the 1.15 mm back tip. (Corrected 2026-07-23: an
+    earlier draft misplaced the peak 19 mm from the slot front, which cannot fit the
+    63.5 mm depth.)
   - Depth 2.75 mm below the base plane.
 - Two INNER channels flanking the raised label platform (~41 mm long), each with an
   assembly screw recessed ~20 mm from the front edge (43 mm from the back). Screws sit
@@ -51,10 +54,11 @@ foot recesses, which are co-planar ("base plane"). Front = grille face.
 Purpose: verify the connector geometry only — do the ribs drop into the slots, seat
 flat, and hold against slide/rotation with acceptable snugness?
 
-- The plate and both ribs exactly as specified above, NO tripod boss (faster print,
-  nothing else to confound the fit reading).
-- A small front-edge chamfer/label notch to mark FRONT so the coupon goes in the right
-  way round.
+- Slim bridge plate 54 x 26 x 2.4 mm spanning both ribs, NO tripod boss (fast print,
+  nothing else to confound the fit reading). Ribs 22 mm long from the slot front
+  (front + peak zone; the thin tail is ignored), stations 3.40 / 4.05 peak / 2.73 mm.
+- A center notch in the front edge marks FRONT so the coupon goes in the right way
+  round (corner chamfers were dropped: too close to the rib ends for the kernel).
 - Parametric build123d Python (single PARAMS dict at top: all slot stations, spacing,
   clearance, heights); exports STEP (Onshape import) + STL (print). Clearance is one
   number; re-print variants by changing it alone.

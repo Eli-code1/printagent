@@ -1,15 +1,18 @@
-"""Phase-1 fit-check coupon for the inbio Apollo Fan tripod sled.
+"""Phase-1 fit-check coupon for the inbio Apollo Fan tripod sled (slim v2).
 
 Plate + two kite-profile ribs that drop into the fan's tapered base slots (feet
 removed). No tripod boss yet; this part exists to verify the connector geometry.
 Spec: docs/superpowers/specs/2026-07-23-apollo-fan-tripod-sled-design.md
 
-Exported in print orientation (+Z up, plate on the bed). The fan's base plane
-lands on the plate TOP face (z = plate_t); ribs rise 2.0 mm above it into the
-2.75 mm deep slots. Front of the fan = +Y (chamfered plate corners mark it).
+Slot model (calipers, 2026-07-23): each slot starts 10.15 mm behind the box's
+front edge; width ~4.0 mm at the start (ASSUMED), rises to the 4.65 mm peak
+8.85 mm in (19 mm from the box front edge), then falls at 0.10 mm/mm for 35 mm
+to the 1.15 mm back tip (total length ~43.9 mm). Depth 2.75 mm.
 
-All driving numbers live in PARAMS. `clearance_side` is the one knob a physical
-fit test tunes: rib width = slot width - 2 * clearance_side at every station.
+Exported in print orientation (+Z up, plate on the bed). Fan base plane lands on
+the plate TOP (z = plate_t); ribs rise rib_h above it. Fan front = +Y (chamfered
+plate corners mark it). Rib width = slot width - 2*clearance_side everywhere;
+`clearance_side` is the one knob the physical fit test tunes.
 """
 from __future__ import annotations
 from build123d import (Align, Axis, Box, Polygon, Pos, chamfer, extrude)
@@ -17,35 +20,41 @@ from build123d import (Align, Axis, Box, Polygon, Pos, chamfer, extrude)
 PARAMS = dict(
     # measured slot geometry (per side, mm)
     slot_center_x=23.0,        # slot centerline offset from fan centerline (~46 c-c)
-    slot_stations=(             # (distance from slot front end, slot width) pairs
-        (0.0, 4.0),             # front end width ASSUMED 4.0, not yet measured
-        (19.0, 4.6),            # the kite's peak
-        (27.0, 4.0),            # back to ~4.0 past the bulge
-    ),
-    slot_depth=2.75,            # below the fan's base plane
+    slot_front_w=4.0,          # width at the slot's front end (ASSUMED, unmeasured)
+    slot_peak_d=8.85,          # peak distance from the slot's front end
+    slot_peak_w=4.65,          # the kite's widest point (4.6-4.7 measured)
+    slot_taper_slope=0.10,     # mm of width lost per mm behind the peak
+    slot_depth=2.75,           # below the fan's base plane
     # rib (the mating feature)
-    rib_len=30.0,               # engage the wide front portion only; taper tail ignored
-    rib_end_w=3.5,              # interpolated slot width at rib_len
-    rib_h=2.0,                  # 0.75 mm shy of slot_depth: never bottoms out
-    clearance_side=0.30,        # per-side fit clearance; THE fit-test knob
-    # plate
-    plate_w=56.0,               # across (X)
-    plate_d=44.0,               # front-to-back (Y)
-    plate_t=3.0,
-    front_chamfer=5.0,          # corner chamfers marking FRONT (+Y)
-    foot_chamfer=0.4,           # elephant's-foot relief on the bed-side edges
+    rib_len=22.0,              # engage front+peak zone only; long thin tail ignored
+    rib_h=2.0,                 # 0.75 mm shy of slot_depth: never bottoms out
+    clearance_side=0.30,       # per-side fit clearance; THE fit-test knob
+    # plate (slim test bridge)
+    plate_w=54.0,              # across (X)
+    plate_d=26.0,              # front-to-back (Y)
+    plate_t=2.4,
+    notch_w=8.0,               # center notch in the front edge marking FRONT (+Y)
+    notch_d=2.0,
+    foot_chamfer=0.4,          # elephant's-foot relief on the bed-side edges
 )
+
+
+def slot_width(p: dict, d: float) -> float:
+    """Slot width at distance d behind the slot's front end."""
+    if d <= p["slot_peak_d"]:
+        f, w = p["slot_front_w"], p["slot_peak_w"]
+        return f + (w - f) * d / p["slot_peak_d"]
+    return p["slot_peak_w"] - p["slot_taper_slope"] * (d - p["slot_peak_d"])
 
 
 def _rib(p: dict):
     """One rib: kite plan profile extruded rib_h up from the plate top."""
-    c = p["clearance_side"]
-    half_l = p["rib_len"] / 2.0
-    stations = [(d, w - 2 * c) for d, w in p["slot_stations"]]
-    stations.append((p["rib_len"], p["rib_end_w"] - 2 * c))
-    # closed outline: down the left flank, back up the right
-    left = [(-w / 2.0, half_l - d) for d, w in stations]
-    right = [(w / 2.0, half_l - d) for d, w in reversed(stations)]
+    c, L = p["clearance_side"], p["rib_len"]
+    stations = [0.0, p["slot_peak_d"], L]
+    pts = [(d, slot_width(p, d) - 2 * c) for d in stations]
+    half_l = L / 2.0
+    left = [(-w / 2.0, half_l - d) for d, w in pts]
+    right = [(w / 2.0, half_l - d) for d, w in reversed(pts)]
     profile = Polygon(*(left + right), align=None)
     return extrude(profile, amount=p["rib_h"])
 
@@ -55,14 +64,13 @@ def build(spec: dict | None = None):
     plate = Box(p["plate_w"], p["plate_d"], p["plate_t"],
                 align=(Align.CENTER, Align.CENTER, Align.MIN))
     part = plate
-    # rib front ends sit flush with the slot front; both share the fan centerline
-    rib_y = 0.0
+    # ribs centered on the plate; rib front end = slot front end
     for sx in (-p["slot_center_x"], p["slot_center_x"]):
-        part += Pos(sx, rib_y, p["plate_t"]) * _rib(p)
-    # FRONT marker: chamfer the two vertical plate corners on +Y
-    front_verticals = (part.edges().filter_by(Axis.Z)
-                       .filter_by(lambda e: e.center().Y > p["plate_d"] / 2 - 1))
-    part = chamfer(front_verticals, length=p["front_chamfer"])
+        part += Pos(sx, 0.0, p["plate_t"]) * _rib(p)
+    # FRONT marker: notch cut into the center of the front (+Y) edge
+    part -= Pos(0, p["plate_d"] / 2 - p["notch_d"] / 2, 0) * Box(
+        p["notch_w"], p["notch_d"] + 0.2, p["plate_t"],
+        align=(Align.CENTER, Align.CENTER, Align.MIN))
     # elephant's-foot relief on the bed-contact perimeter
     bottom = part.faces().sort_by(Axis.Z)[0]
     part = chamfer(bottom.edges(), length=p["foot_chamfer"])
@@ -74,3 +82,6 @@ part = build()
 if __name__ == "__main__":
     bb = part.bounding_box()
     print("bbox", bb.size, "volume mm^3", round(part.volume, 1))
+    for d in (0.0, PARAMS["slot_peak_d"], PARAMS["rib_len"]):
+        print(f"  rib width at {d:5.2f} mm:",
+              round(slot_width(PARAMS, d) - 2 * PARAMS["clearance_side"], 2))

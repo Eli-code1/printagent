@@ -18,7 +18,7 @@ boss yet. Spec: `docs/superpowers/specs/2026-07-23-apollo-fan-tripod-sled-design
 
 ## Fit test
 1. Feet off the fan; set it upside down.
-2. Chamfered corners of the coupon face the FRONT (grille side).
+2. The notched edge of the coupon faces the FRONT (grille side).
 3. Lower straight in — both ribs into the outer black slots. It should drop in,
    sit flush on the base plane with no rock, and resist sliding/twisting by hand.
 
