@@ -36,7 +36,8 @@ If you want to test it locally before publishing, point the marketplace at this 
 ## Python dependencies
 
 Plugins ship files, not Python packages. The four geometry skills need `build123d`, `trimesh`,
-`scipy`, and `numpy`. Install them into a virtual environment that your `python` resolves to:
+`scipy`, `numpy`, and `rtree` (trimesh's ray casting needs it, but doesn't install it for you).
+Install them into a virtual environment that your `python` resolves to:
 
 ```bash
 python -m venv .venv && source .venv/bin/activate

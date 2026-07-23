@@ -1,8 +1,12 @@
 # Python dependencies for the FDM Design Loop skills.
 #
 # Verified working set (macOS, Python 3.11):
-#   build123d 0.10.0, trimesh 4.12.2, scipy 1.17.1, numpy 2.3.2
+#   build123d 0.10.0, trimesh 4.12.2, scipy 1.17.1, numpy 2.3.2, rtree 1.4.1
 #   (build123d pulls in cadquery-ocp 7.8.1.1 — the OCCT geometry kernel).
+#
+# rtree is an optional trimesh extra, not a hard dependency of it — but
+# reviewing-manufacturability-fdm's check_min_wall.py uses trimesh ray casting,
+# which imports rtree at call time. Without it the gate crashes.
 #
 # NOTE: two of the six skills need NONE of these — `analyzing-print-failures`
 # and `designing-in-plain-language` run on the Python standard library alone.
@@ -13,3 +17,4 @@ build123d>=0.10.0
 trimesh>=4.12.0
 scipy>=1.13.0
 numpy>=1.26.0
+rtree>=1.0.0
