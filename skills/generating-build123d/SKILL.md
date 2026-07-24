@@ -61,7 +61,12 @@ up**. Decide orientation deliberately first, put the principal tensile load in t
 the footprint stable, then export in that orientation.
 
 ## Export and check (the loop)
-Export STEP (lossless, gives the gate a B-rep) and STL, then run the loop glue:
+Export STEP (lossless, gives the gate a B-rep) and STL, then run the loop glue.
+STEP product names come from build123d `label`s, and downstream CAD (Onshape, Fusion,
+FreeCAD) shows them as the part names on import, so set `part.label` (and a label per
+compound child on multi-body parts) to real names; `export_part` falls back to the file
+stem and `<stem>_1..n` for anything left unlabeled. Identical bodies dedupe to one STEP
+product, so give copies of the same part one shared name.
 
     python scripts/build_and_check.py my_part.py \
         --printer bambu_x1c --profile structural \
