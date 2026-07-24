@@ -3,3 +3,9 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+
+# secrets must never enter the repo - Onshape keys live in ~/.config/onshape/
+.env
+.env.*
+credentials
+*.pem

@@ -17,6 +17,7 @@ This repository is both a plugin and its own marketplace, so it installs by name
 | `reviewing-manufacturability-fdm` | Runs the deterministic DFM gates (minimum wall by cone-SDF thickness, overhang angle, enclosed or undrained voids, and build-volume fit) and writes `verification.json`. | yes |
 | `reviewing-structural-loads` | Checks load direction against the layer plane, finds the weakest cross-section, flags stress risers, and reports mass, center of mass, and inertia into `structural_review.json`. | yes |
 | `slicing-handoff-bambu` | Packages a verified part into a millimetre 3MF, an archival STEP, and a manifest, with an optional Bambu Studio CLI slice. | yes |
+| `publishing-onshape` | Publishes a part to Onshape as a native, visually editable feature tree (real sketches and extrudes) via the REST API. | no, stdlib |
 | `analyzing-print-failures` | Diagnoses a failed print (warping, stringing, layer shift, and the rest) and routes the fix. | no, stdlib |
 | `designing-in-plain-language` | An opt-in mode that asks only the questions that matter, in plain words, and explains the gate and review results without jargon. It wraps the other skills. | no, stdlib |
 
