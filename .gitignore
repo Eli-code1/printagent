@@ -9,3 +9,7 @@ venv/
 .env.*
 credentials
 *.pem
+
+# personal part projects and design notes stay local, out of the public plugin
+parts/
+docs/superpowers/
