@@ -1,8 +1,0 @@
-{
-  "created_utc": "2026-06-01T13:38:03.211702Z",
-  "spec_ref": null,
-  "files": {
-    "model.3mf": "sha256:f99700e65daa18d1ad7280bf2f9120b213edcf51c3642b0de710875ac1c71be3",
-    "model.step": "sha256:6ae562ac1d4c3e793e67436859fed831f3895cdf4f2067c4251a45282e787cec"
-  }
-}
