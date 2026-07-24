@@ -1,6 +1,9 @@
-"""Quick matplotlib previews of the fit-check coupon (no GL/pyglet needed)."""
+"""Quick matplotlib previews (no GL/pyglet needed). Renders coupon.stl by default;
+pass another stem (e.g. `python render.py sled`) to render that STL instead, written
+as renders/<stem>_<view>.png."""
 from __future__ import annotations
 import os
+import sys
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -8,8 +11,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import trimesh
 
+STEM = sys.argv[1] if len(sys.argv) > 1 else "coupon"
+PREFIX = "" if STEM == "coupon" else STEM + "_"
 os.makedirs("renders", exist_ok=True)
-m = trimesh.load("coupon.stl", force="mesh")
+m = trimesh.load(f"{STEM}.stl", force="mesh")
 ctr = m.vertices.mean(axis=0)
 rng = (m.vertices.max(axis=0) - m.vertices.min(axis=0)).max() / 2.0
 
@@ -26,13 +31,16 @@ def draw(ax, elev, azim, zscale=1.0):
     ax.set_axis_off()
 
 
-views = {"iso": (28, -55), "top": (88, -90), "front": (8, -90), "low": (12, -35)}
+views = {"iso": (28, -55), "top": (88, -90), "front": (8, -90), "low": (12, -35),
+         "under": (-35, -55)}
 for name, (elev, azim) in views.items():
+    if name == "under" and STEM == "coupon":
+        continue                      # coupon underside is featureless
     fig = plt.figure(figsize=(7, 5.4), dpi=150)
     ax = fig.add_subplot(111, projection="3d")
     draw(ax, elev, azim)
     fig.tight_layout(pad=0)
-    fig.savefig(f"renders/{name}.png", bbox_inches="tight",
+    fig.savefig(f"renders/{PREFIX}{name}.png", bbox_inches="tight",
                 facecolor="white")
     plt.close(fig)
-    print("wrote renders/" + name + ".png")
+    print(f"wrote renders/{PREFIX}{name}.png")

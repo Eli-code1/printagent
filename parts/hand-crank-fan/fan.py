@@ -231,7 +231,11 @@ wheel = recline(build_wheel())
 pinion = recline(build_pinion_rotor())
 pin_a = recline(seat_pin(0.0))
 pin_b = recline(seat_pin(CD))
+for _body, _nm in zip((base, wheel, pinion, pin_a, pin_b),
+                      ("base", "wheel", "pinion", "pin", "pin")):
+    _body.label = _nm
 part = Compound(children=[base, wheel, pinion, pin_a, pin_b])
+part.label = "hand_crank_fan"
 
 
 # ------------------------------------------------------------------- print plate (flat, separate)
@@ -254,6 +258,10 @@ def build_plate():
              Pos(150, 165, 0) * p,
              Pos(140, 60, 0) * pin_flat,
              Pos(158, 60, 0) * pin_flat]
+    # named so the STEP imports into CAD (Onshape etc.) as named parts; the two
+    # pins are the same shape, which STEP dedupes to one product, so one name
+    for body, nm in zip(items, ("base", "wheel", "pinion", "pin", "pin")):
+        body.label = nm
     return Compound(children=items)
 
 
