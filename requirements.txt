@@ -13,6 +13,10 @@
 # reviewing-manufacturability-fdm's check_min_wall.py uses trimesh ray casting,
 # which imports rtree at call time. Without it the gate crashes.
 #
+# networkx and lxml are likewise optional trimesh extras that its 3MF writer
+# imports at call time; slicing-handoff-bambu's export_3mf.py crashes without
+# them.
+#
 # NOTE: two of the six skills need NONE of these — `analyzing-print-failures`
 # and `designing-in-plain-language` run on the Python standard library alone.
 # Install the packages below only for the geometry skills (generating-build123d,
@@ -24,3 +28,5 @@ scipy>=1.13.0
 numpy>=1.26.0
 rtree>=1.0.0
 bd_warehouse>=0.3.0
+networkx>=3.0
+lxml>=5.0
