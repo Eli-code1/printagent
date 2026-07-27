@@ -17,6 +17,10 @@
 # imports at call time; slicing-handoff-bambu's export_3mf.py crashes without
 # them.
 #
+# shapely is another optional trimesh extra imported at call time — its
+# section/slice-capping code (trimesh.path.polygons) needs it when the geometry
+# skills cross-section parts. Without it those calls raise ModuleNotFoundError.
+#
 # NOTE: two of the six skills need NONE of these — `analyzing-print-failures`
 # and `designing-in-plain-language` run on the Python standard library alone.
 # Install the packages below only for the geometry skills (generating-build123d,
@@ -30,3 +34,4 @@ rtree>=1.0.0
 bd_warehouse>=0.3.0
 networkx>=3.0
 lxml>=5.0
+shapely>=2.1
