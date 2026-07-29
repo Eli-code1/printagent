@@ -14,7 +14,13 @@ def check_enclosed_volumes(mesh, pitch=0.5, min_void_mm3=1.0, max_voxels=40_000_
         note = (f"pitch increased to {pitch:.3f} mm to fit budget; "
                 f"drains smaller than ~{pitch:.2f} mm may be falsely sealed")
 
-    vg = mesh.voxelized(pitch=pitch).fill()
+    try:
+        vg = mesh.voxelized(pitch=pitch).fill()
+    except Exception:
+        # The default subdivide-based voxelizer hits subdivide_to_size
+        # max_iter on large parts; the ray voxelizer needs no subdivision.
+        vg = mesh.voxelized(pitch=pitch, method="ray").fill()
+        note = ((note + "; ") if note else "") + "ray voxelizer fallback"
     solid = np.pad(vg.matrix, 1, mode="constant", constant_values=False)
     labels, n = ndimage.label(~solid)             # label empty space
 

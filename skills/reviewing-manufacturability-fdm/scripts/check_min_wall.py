@@ -127,12 +127,17 @@ def _voxel_opening(mesh, T, max_voxels=40_000_000):
 
     try:
         vg = mesh.voxelized(pitch=pitch).fill()
-    except Exception as e:
-        # Large parts can defeat trimesh's subdivide-based voxelizer
-        # (subdivide_to_size max_iter). The fusion treats passed=None as
-        # "method unavailable" and lets cone-SDF carry the verdict.
-        return {"passed": None, "confidence": "none",
-                "note": f"voxelization failed on this mesh: {type(e).__name__}"}
+    except Exception:
+        # The default subdivide-based voxelizer hits subdivide_to_size
+        # max_iter on large parts; retry with the ray voxelizer, and if
+        # that also fails degrade to passed=None so the fusion lets the
+        # cone-SDF primary carry the verdict instead of crashing the gate.
+        try:
+            vg = mesh.voxelized(pitch=pitch, method="ray").fill()
+            note = ((note + "; ") if note else "") + "ray voxelizer fallback"
+        except Exception as e:
+            return {"passed": None, "confidence": "none",
+                    "note": f"voxelization failed on this mesh: {type(e).__name__}"}
     solid = np.pad(vg.matrix, 1, mode="constant", constant_values=False)
     if solid.sum() == 0:
         return {"passed": None, "confidence": "none", "note": "voxelization empty"}
