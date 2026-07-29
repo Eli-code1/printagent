@@ -36,6 +36,15 @@ For "cylinder" joints, point+dir is the shared axis in ASSEMBLY coordinates and
 span brackets the engagement zone along it (offsets from point). For "width"
 joints (tongue/dovetail), dir is the width direction; span offsets run along
 the optional "station_dir" (defaults to the axis orthogonal to dir and Z).
+
+Width features are measured by paired rays cast from point outward along
++-dir, so point must sit in the slot's void or the rail's solid. A HOLLOW rail
+(a tube whose OUTER faces are the fit surface) has no such interior point: any
+centered origin sits in the internal void and the rays report the bore, not
+the outer width. Declare "probe": "outer" on that rail and the checker instead
+casts each ray pair inward from outside the part's bounds, measuring the outer
+envelope along the station line. "probe" is only valid as "outer", on the rail
+of a width joint.
 """
 from __future__ import annotations
 import json
@@ -87,6 +96,12 @@ def load_manifest(path: str) -> dict:
             elif feat["part"] not in man.get("parts", {}):
                 problems.append(f"joint '{j.get('name')}' references unknown "
                                 f"part '{feat['part']}'")
+            probe = feat.get("probe")
+            if probe is not None and (probe != "outer"
+                                      or j.get("type") != "width"
+                                      or feat.get("kind") != "rail"):
+                problems.append(f"joint '{j.get('name')}' {side}: probe must "
+                                f"be \"outer\", and only on a width-joint rail")
     for name in man.get("sequence", []):
         if name not in man.get("parts", {}):
             problems.append(f"sequence references unknown part '{name}'")

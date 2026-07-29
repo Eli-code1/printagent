@@ -6,7 +6,8 @@ print-pose mesh into the assembly frame, then:
 1. MEASURES each declared joint feature from the built mesh by ray probing
    (robust to sparse STL tessellation, unlike vertex sampling): bores/pins by
    radial rays from the shared axis, slots/rails by paired rays along the
-   width direction.
+   width direction (hollow rails declare "probe": "outer" and are measured
+   by rays cast inward from outside the part instead).
 2. MODELS the as-printed dimension: each feature is classified axial/lateral
    against its own part's build axis and given the (mu, sigma) error from
    fit_rules, plus seam bulge on vertical pins and an elephant-foot note for
@@ -97,23 +98,35 @@ def measure_cylinder(mesh, point, axis, span, nominal, n_ang=16, n_st=5):
                                               - np.percentile(r, 5))
 
 
-def measure_width(mesh, point, wdir, span, nominal, station_dir, n_st=5):
+def measure_width(mesh, point, wdir, span, nominal, station_dir, n_st=5,
+                  probe=None):
     """Width across a slot (origin in the void) or a rail (origin in the
-    solid): paired rays along +-wdir from stations along station_dir."""
+    solid): paired rays along +-wdir from stations along station_dir.
+    probe="outer" instead casts each pair inward from outside the part's
+    bounds and reports the outer envelope along the station line: for hollow
+    rails (tubes) whose OUTER faces are the fit surface, where any interior
+    origin could only see the bore."""
     wdir = _unit(wdir)
     station_dir = _unit(station_dir)
     point = np.asarray(point, dtype=float)
+    reach = float(np.linalg.norm(mesh.bounds[1] - mesh.bounds[0])) + 1.0
     origins, dirs = [], []
     for s in np.linspace(span[0], span[1], n_st):
         o = point + station_dir * s
-        origins += [o, o]
-        dirs += [wdir, -wdir]
+        if probe == "outer":
+            origins += [o + wdir * reach, o - wdir * reach]
+            dirs += [-wdir, wdir]
+        else:
+            origins += [o, o]
+            dirs += [wdir, -wdir]
     d = ray_hits(mesh, np.array(origins), np.array(dirs))
     widths = []
     for i in range(0, len(d), 2):
         if np.isfinite(d[i]) and np.isfinite(d[i + 1]):
             w = d[i] + d[i + 1]
-            if w < nominal * 1.6:
+            if probe == "outer":
+                w = 2 * reach - w
+            if 0 < w < nominal * 1.6:
                 widths.append(w)
     if len(widths) < 2:
         return None, None
@@ -160,7 +173,7 @@ def check_joints(man, placed):
                     station_dir = np.cross(_unit(feat["dir"]), [0, 0, 1.0])
                 meas, spread = measure_width(
                     part["mesh"], feat["point"], feat["dir"], feat["span"],
-                    feat["nominal"], station_dir)
+                    feat["nominal"], station_dir, probe=feat.get("probe"))
             if meas is None:
                 row["verdict"] = "FAIL"
                 row["advice"] = (f"{side} feature on '{feat['part']}' not found "
