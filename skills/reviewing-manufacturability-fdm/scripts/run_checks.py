@@ -77,6 +77,10 @@ if __name__ == "__main__":
     ap.add_argument("--layer-height", type=float, default=0.2)
     ap.add_argument("--profile", choices=["cosmetic", "structural"], default="structural")
     a = ap.parse_args()
-    report = run(a.part, a.printer, a.nozzle, a.layer_height, a.profile)
+    # libraries (e.g. trimesh's sampler) print progress noise to stdout;
+    # push that to stderr so stdout stays machine-parseable JSON
+    import contextlib
+    with contextlib.redirect_stdout(sys.stderr):
+        report = run(a.part, a.printer, a.nozzle, a.layer_height, a.profile)
     print(json.dumps(report, indent=2))
     sys.exit(0 if report["manufacturable"] else 1)
