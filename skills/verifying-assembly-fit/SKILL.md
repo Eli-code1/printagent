@@ -48,7 +48,10 @@ geometry disagree; fix that before trusting anything else.
 **joints** - for each declared joint the checker ray-measures the real inner
 (bore/slot) and outer (pin/rail) dimensions, classifies each feature
 axial/lateral against its own part's build axis, applies the as-printed error
-model, and reports the effective clearance band `[lo, mid, hi]` (95%). The
+model, and reports the effective clearance band `[lo, mid, hi]` (95%). A
+hollow rail (a tube whose outer faces are the fit surface) must declare
+`"probe": "outer"` so its width is probed from outside the part; a centered
+origin would measure the bore instead. The
 verdict compares that band to the intent's window:
 - `PASS` - the whole band sits inside the window.
 - `WARN` - the nominal lands inside but printer spread spills out; fine on a
