@@ -125,7 +125,14 @@ def _voxel_opening(mesh, T, max_voxels=40_000_000):
         note = (f"voxel pitch coarsened to {pitch:.3f} mm; features below "
                 f"~{2 * pitch:.2f} mm may be missed")
 
-    vg = mesh.voxelized(pitch=pitch).fill()
+    try:
+        vg = mesh.voxelized(pitch=pitch).fill()
+    except Exception as e:
+        # Large parts can defeat trimesh's subdivide-based voxelizer
+        # (subdivide_to_size max_iter). The fusion treats passed=None as
+        # "method unavailable" and lets cone-SDF carry the verdict.
+        return {"passed": None, "confidence": "none",
+                "note": f"voxelization failed on this mesh: {type(e).__name__}"}
     solid = np.pad(vg.matrix, 1, mode="constant", constant_values=False)
     if solid.sum() == 0:
         return {"passed": None, "confidence": "none", "note": "voxelization empty"}
