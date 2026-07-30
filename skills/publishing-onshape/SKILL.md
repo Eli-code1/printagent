@@ -58,6 +58,26 @@ DELETE) - reuse documents with `--url` instead of recreating.
   `BTCurveGeometryLine-117` (pnt + dir = full delta, params 0..1). Circles:
   `BTMSketchCurve-4` with `BTCurveGeometryCircle-115`.
 - The featurescript endpoint takes `"queries": {}` (a map, not a list).
+- Sketch ARCS: `BTMSketchCurveSegment-155` wrapping `BTCurveGeometryCircle-115`
+  with `startParam`/`endParam` in RADIANS (CCW from +x with `xDir:1,yDir:0,
+  clockwise:false`); lines use 0..1 params. Rounded rects = 4 lines + 4 quarter
+  arcs, endpoints numerically coincident, constraints [].
+- Extrude draft: add `hasDraft` (bool), `draftAngle` (quantity, "1 deg"),
+  `draftPullDirection` (bool; false narrows an UP extrude going up). Onshape
+  measures draft from the SKETCH PLANE, not the extrude's functional start -
+  compensate the profile by 2*offset*tan(angle) when the part's draft datum
+  sits above z=0.
+- Chamfer: featureType "chamfer", params `entities` (query list),
+  `chamferType` enum `EQUAL_OFFSETS` (enumName "ChamferType"), `width`
+  quantity, `tangentPropagation` bool. Concave edges work (adds material).
+  Select edges with `qContainsPoint(qEverything(EntityType.EDGE), vector(...)
+  * meter)` - one seed point per tangent chain; qCreatedBy on the extrude that
+  formed a boolean edge can come up empty, qEverything+point is the robust
+  form. Verify via featureState + a mass-properties closure, not the
+  featurescript eval endpoint (it can report 0 for edges that features
+  resolve fine).
+- Failed features stay addressable: POST the corrected definition back to
+  `/features/featureid/{fid}` (same wrapper) instead of deleting.
 
 ## Design for editability
 Keep every sketch on a default plane (no face-id discovery, no fragile
