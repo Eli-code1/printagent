@@ -63,6 +63,14 @@ Two skills sit outside that spine. `analyzing-print-failures` diagnoses a print 
 the bed, and `designing-in-plain-language` wraps the whole loop for anyone who would rather not
 learn the engineering to get a working part.
 
+## Parts
+
+Open-source parts published alongside the skills, free to download and print:
+
+| Part | What it is | Size |
+|------|------------|------|
+| [`air-sampling-cassette`](air-sampling-cassette/) | A flat 3/16 in frame for an air sampling cassette. Watertight STL, prints flat with no supports. | 98.4 × 130.4 × 4.8 mm |
+
 ## License
 
 [MIT](LICENSE), copyright 2026 Eli-code1. Use it for anything, including commercial work; just keep
