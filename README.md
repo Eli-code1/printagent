@@ -75,3 +75,10 @@ Open-source parts published alongside the skills, free to download and print:
 
 [MIT](LICENSE), copyright 2026 Eli-code1. Use it for anything, including commercial work; just keep
 the copyright line.
+
+## Trademarks
+
+Printagent is an independent project, not affiliated with or endorsed by any printer, slicer, or
+CAD vendor it names. Product names appear here only to identify what the skills interoperate
+with, and the MIT license above covers copyright only — it grants no trademark rights. See
+[TRADEMARKS.md](TRADEMARKS.md) for the full notice and the list of owners.

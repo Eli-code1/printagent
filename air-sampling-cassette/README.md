@@ -106,7 +106,11 @@ X1C 0.4 nozzle, 0.20 mm Standard, PLA Basic, `--arrange 0 --orient 0`:
 Overhang and bridge features do appear in the gcode, but they resolve without support.
 
 
-## License
+## License and trademarks
 
 MIT, the same as the rest of this repository — see [LICENSE](../LICENSE). Use it for anything,
 including commercial work; just keep the copyright line.
+
+Bambu Lab, Bambu Studio, and X1 Carbon are trademarks of Bambu Lab, used here only to identify
+the printer and slicer this plate was measured and verified against. This part and this project
+are not affiliated with or endorsed by Bambu Lab. See [TRADEMARKS.md](../TRADEMARKS.md).
