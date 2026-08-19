@@ -69,7 +69,7 @@ Open-source parts published alongside the skills, free to download and print:
 
 | Part | What it is | Size |
 |------|------------|------|
-| [`air-sampling-cassette`](air-sampling-cassette/) | A flat 3/16 in frame for an air sampling cassette. Watertight STL, prints flat with no supports. | 98.4 × 130.4 × 4.8 mm |
+| [`air-sampling-cassette`](air-sampling-cassette/) | A flat 3/16 in frame for an air sampling cassette. Watertight STL, prints flat with no supports, and ships with a [four-up X1C plate](air-sampling-cassette/#four-up-on-one-x1c-plate) that fits by pinwheeling the parts. | 98.4 × 130.4 × 4.8 mm |
 
 ## License
 
