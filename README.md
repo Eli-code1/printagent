@@ -87,14 +87,19 @@ library alone.
 
 Two skills reach outside Python, and both stay useful without their tool:
 
-- `slicing-handoff-bambu` writes the 3MF, the STEP, and the manifest with no external tool. Only
-  the optional `--slice` step wants a local Bambu Studio, passed as
-  `--bambu-bin /path/to/bambu-studio`; without it the handoff is still complete. Slicing is in
-  scope, starting a print is deliberately not.
+- `slicing-handoff-bambu` writes the 3MF, the STEP, and the manifest with no external tool.
+  Only the optional `--slice` step needs a local Bambu Studio, and it finds the binary itself:
+  `PATH` first, then the standard macOS and Linux install locations. On a normal install you
+  name nothing. For an unusual one, pass `--bambu-bin`, or set the `bambu_bin` option once with
+  `/plugin configure printagent`. Slicing is in scope, starting a print is deliberately not.
 - `publishing-onshape` needs an Onshape account and API keys from the
-  [developer portal](https://cad.onshape.com/appstore/dev-portal), written as
-  `ONSHAPE_ACCESS_KEY=` and `ONSHAPE_SECRET_KEY=` lines in `~/.config/onshape/credentials` or set
-  as environment variables. Keys never enter the repo and are never logged.
+  [developer portal](https://cad.onshape.com/appstore/dev-portal). Just ask Claude to set up
+  Onshape and the skill walks you through it, using
+  `scripts/setup_credentials.py`: `--check` reports whether keys exist, `--instructions` prints
+  the steps, `--write` prompts for the keys in your own terminal and saves
+  `~/.config/onshape/credentials` with 0600 permissions, and `--verify` confirms them against
+  the live API. Type the secret into your terminal, never into the chat. Keys never enter the
+  repo and are never logged.
 
 ## Printers
 
