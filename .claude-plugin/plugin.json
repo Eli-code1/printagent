@@ -17,5 +17,13 @@
     "manufacturability",
     "trimesh",
     "slicing"
-  ]
+  ],
+  "userConfig": {
+    "bambu_bin": {
+      "type": "file",
+      "title": "Bambu Studio binary",
+      "description": "Only needed if Bambu Studio is installed somewhere non-standard. Leave empty to auto-detect from PATH and the usual install locations.",
+      "required": false
+    }
+  }
 }

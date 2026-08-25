@@ -23,7 +23,8 @@ def main():
     ap.add_argument("--renders", default=None)
     ap.add_argument("--spec", default=None)
     ap.add_argument("--slice", action="store_true")
-    ap.add_argument("--bambu-bin", default="bambu-studio")
+    ap.add_argument("--bambu-bin", default=None,
+                    help="override; auto-detected from PATH and standard installs")
     a = ap.parse_args()
 
     geom = export_3mf(a.part, a.out)

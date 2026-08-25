@@ -12,6 +12,37 @@ DEFAULT_PROFILES = {"machine": "Bambu Lab X1 Carbon 0.4 nozzle",
                     "process": "0.20mm Standard @BBL X1C",
                     "filament": "Bambu PLA Basic @BBL X1C"}
 
+# Standard install locations, tried in order when the caller passes no explicit
+# path. Most users never have to name the binary; --bambu-bin stays the override
+# for a non-standard install.
+STANDARD_BINS = [
+    "/Applications/BambuStudio.app/Contents/MacOS/BambuStudio",
+    "~/Applications/BambuStudio.app/Contents/MacOS/BambuStudio",
+    "/usr/bin/bambu-studio",
+    "/usr/local/bin/bambu-studio",
+    "/opt/bambu-studio/bambu-studio",
+    "~/.local/bin/bambu-studio",
+]
+
+
+def find_bambu_bin(bambu_bin=None):
+    """Resolve the Bambu Studio CLI. An explicit path or command name wins; then
+    PATH; then the standard install locations. Returns None when nothing exists."""
+    if bambu_bin:
+        found = shutil.which(bambu_bin)
+        if found:
+            return found
+        expanded = os.path.expanduser(bambu_bin)
+        return expanded if os.path.exists(expanded) else None
+    found = shutil.which("bambu-studio")
+    if found:
+        return found
+    for cand in STANDARD_BINS:
+        expanded = os.path.expanduser(cand)
+        if os.path.exists(expanded):
+            return expanded
+    return None
+
 
 def _flatten_profile(bbl_dir, folder, name, out_dir):
     """The CLI does not resolve `inherits` chains in bundled profiles; merge them."""
@@ -30,12 +61,13 @@ def _flatten_profile(bbl_dir, folder, name, out_dir):
     return out
 
 
-def slice_bambu(model_3mf, out_dir, bambu_bin="bambu-studio",
+def slice_bambu(model_3mf, out_dir, bambu_bin=None,
                 settings=None, filaments=None, mstpp=300, timeout=900):
-    binp = shutil.which(bambu_bin) or (bambu_bin if os.path.exists(bambu_bin) else None)
+    binp = find_bambu_bin(bambu_bin)
     if binp is None:
-        return {"sliced": False, "note": f"Bambu Studio CLI not found ({bambu_bin}); "
-                                         f"install it or skip --slice"}
+        where = bambu_bin if bambu_bin else "PATH or a standard install location"
+        return {"sliced": False, "note": f"Bambu Studio CLI not found ({where}); "
+                                         f"install it, pass --bambu-bin, or skip --slice"}
     # The CLI chdirs mid-run, so relative paths break; --export-3mf must be absolute.
     out_gcode = os.path.abspath(os.path.join(out_dir, "model.gcode.3mf"))
 

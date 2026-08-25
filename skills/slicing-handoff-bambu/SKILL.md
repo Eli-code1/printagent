@@ -35,8 +35,10 @@ A handoff directory containing:
         --material PLA --supports auto --brim on \
         --verification verification.json --renders renders/ --spec spec.json
 
-Add `--slice` with `--bambu-bin /path/to/bambu-studio` to also produce a sliced
-`model.gcode.3mf`.
+Add `--slice` to also produce a sliced `model.gcode.3mf`. You normally do not name the
+binary: the script checks `PATH` and the standard install locations first. Configured
+override for this machine: `${user_config.bambu_bin}` (empty means none set, which is
+fine). Pass `--bambu-bin <path>` only when that override is set or auto-detection fails.
 
 ## Contract rules (important)
 - **print_intent is hints, not commands.** Printer family, nozzle, bed type, layer height,
@@ -55,4 +57,5 @@ which often falls back to defaults with unknown filament.
 
 ## Dependencies
 `pip install "build123d>=0.10" trimesh numpy` plus, for `--slice`, a local Bambu Studio
-install exposing its CLI.
+install exposing its CLI. Auto-detection covers the standard macOS and Linux install paths;
+set the plugin's `bambu_bin` option (`/plugin configure printagent`) for anything else.

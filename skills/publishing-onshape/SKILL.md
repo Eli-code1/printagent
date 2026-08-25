@@ -4,7 +4,9 @@ description: >-
   Publishes parts to Onshape as NATIVE feature trees via the REST API - real
   sketches and extrudes the user can click and edit in the Onshape editor, not
   STEP imports or custom-feature dials. Use when the user wants a part in
-  Onshape in fully editable form, or asks to push/publish CAD to Onshape.
+  Onshape in fully editable form, or asks to push/publish CAD to Onshape. Also
+  covers first-time setup: connecting an Onshape account, creating or fixing API
+  keys, and diagnosing auth failures.
 ---
 
 # Publishing native feature trees to Onshape
@@ -44,6 +46,23 @@ API keys (HTTP Basic) from `~/.config/onshape/credentials`
 https://cad.onshape.com/appstore/dev-portal. `onshape_client.py` loads them and
 never logs values. Keys may lack the delete scope ("Invalid API key state" on
 DELETE) - reuse documents with `--url` instead of recreating.
+
+### First-time setup
+Before the first publish, confirm the keys exist:
+
+    python scripts/setup_credentials.py --check
+
+If that reports no usable keys, show the user the steps:
+
+    python scripts/setup_credentials.py --instructions
+
+Then stop and let them do it. **Never ask the user to paste API keys into the
+chat, and never run `--write` yourself.** A key in the transcript is a key in the
+model's context and in the session log; `--write` is interactive on purpose so the
+secret goes from their keyboard to a 0600 file without passing through here. Once
+they say they are done, confirm with one call:
+
+    python scripts/setup_credentials.py --verify
 
 ## Payload rules that cost a debugging session (do not rediscover)
 - POST `/api/v6/partstudios/d/{did}/w/{wid}/e/{eid}/features` with body
