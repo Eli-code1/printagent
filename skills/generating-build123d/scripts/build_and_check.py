@@ -9,6 +9,23 @@ Usage:
 Exit code 0 = manufacturable, 1 = not.
 """
 from __future__ import annotations
+
+# Run under an interpreter that has the geometry packages. No-op when the current
+# one already does; otherwise re-executes under the environment bootstrap_env.py
+# set up, or exits with instructions instead of a ModuleNotFoundError traceback.
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while not _os.path.exists(_os.path.join(_d, "scripts", "printagent_env.py")):
+    _p = _os.path.dirname(_d)
+    if _p == _d:
+        _d = None
+        break
+    _d = _p
+if _d:
+    _sys.path.insert(0, _os.path.join(_d, "scripts"))
+    from printagent_env import ensure as _ensure
+    _ensure()
+
 import argparse
 import importlib.util
 import json

@@ -55,29 +55,37 @@ Python environment: `generating-build123d`, `orienting-for-fdm`,
 `reviewing-manufacturability-fdm`, `reviewing-structural-loads`, `verifying-assembly-fit`, and
 `slicing-handoff-bambu`.
 
-**You do not need to clone this repository.** Installing the plugin already fetched every script;
-these two lines add the Python side, straight from the URL:
+**You do not need to clone this repository, and you do not need to know what a virtualenv is.**
+After installing the plugin, ask Claude to set up Printagent, or run the bootstrap yourself:
+
+```bash
+python3 <plugin root>/scripts/bootstrap_env.py --install
+```
+
+It finds a suitable Python, builds a private environment at `~/printagent-env`, installs
+everything, and records where it went. **There is nothing to activate afterwards.** The skills
+re-execute themselves under that interpreter, so they work even when the `python` on your PATH
+knows nothing about them. Check the state any time with `--check`.
+
+One requirement it cannot paper over: the geometry kernel needs **Python 3.10 or newer**. The
+`python3` that ships with macOS is 3.9, so the bootstrap looks for a newer one and tells you how
+to install it if there is none.
+
+The packages are `build123d` (which pulls in cadquery-ocp, the OCCT kernel), `trimesh`, `numpy`,
+and `scipy`, plus four that trimesh calls optional extras but imports at call time, so they are
+hard requirements here: `rtree` for the ray casting behind the min-wall and fit probes,
+`networkx` and `lxml` for the 3MF writer, and `shapely` for cross-sections. `requirements.txt`
+also pins `bd_warehouse` for thread and fastener generators; no skill in this repo imports it
+today, so drop that line if you do not model printed threads. Expect roughly 700 MB and a few
+minutes. Verified on macOS with Python 3.11 and 3.13.
+
+If you would rather manage the environment yourself, the plain route still works and the skills
+will find it:
 
 ```bash
 python3 -m venv ~/printagent-env && source ~/printagent-env/bin/activate
 pip install -r https://raw.githubusercontent.com/Eli-code1/printagent/main/requirements.txt
 ```
-
-Check it landed:
-
-```bash
-python -c "import build123d, trimesh, scipy, rtree, shapely; print('printagent deps ok')"
-```
-
-Start Claude Code from that activated environment so the skills resolve the packages. If you did
-clone the repo, `pip install -r requirements.txt` from the checkout does the same thing.
-
-That set is `build123d` (which pulls in cadquery-ocp, the OCCT kernel), `trimesh`, `numpy`, and
-`scipy`, plus four packages trimesh calls optional extras but imports at call time, so they are
-hard requirements here: `rtree` for the ray casting behind the min-wall and fit probes,
-`networkx` and `lxml` for the 3MF writer, and `shapely` for cross-sections. `requirements.txt`
-also pins `bd_warehouse` for thread and fastener generators; no skill in this repo imports it
-today, so drop that line if you do not model printed threads. Verified on macOS with Python 3.11.
 
 The other three skills, `publishing-onshape`, `analyzing-print-failures`, and
 `designing-in-plain-language`, need nothing installed, since they run on the Python standard

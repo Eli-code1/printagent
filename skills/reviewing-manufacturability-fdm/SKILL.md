@@ -36,6 +36,11 @@ their JSON output.
 `open3d`, `libigl`. build123d is pre-1.0; **pin the version**, the offscreen/STEP APIs
 used here are version-sensitive.
 
+If a script reports that packages are missing, do not hand the user pip commands and do not try to fix an import error by hand. Run the plugin's bootstrap, which builds a private environment and records it so every skill finds it with nothing to activate:
+
+    python3 <plugin root>/scripts/bootstrap_env.py --check
+    python3 <plugin root>/scripts/bootstrap_env.py --install
+
 ## How to run
 Run the orchestrator and read its stdout. Do not reimplement the checks.
 

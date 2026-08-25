@@ -99,3 +99,8 @@ failure count (revert and escalate).
 ## Dependencies
 `pip install trimesh numpy rtree` (ray probing needs rtree). Shares the
 environment with the other geometry skills.
+
+If a script reports that packages are missing, do not hand the user pip commands and do not try to fix an import error by hand. Run the plugin's bootstrap, which builds a private environment and records it so every skill finds it with nothing to activate:
+
+    python3 <plugin root>/scripts/bootstrap_env.py --check
+    python3 <plugin root>/scripts/bootstrap_env.py --install

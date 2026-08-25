@@ -59,3 +59,8 @@ which often falls back to defaults with unknown filament.
 `pip install "build123d>=0.10" trimesh numpy` plus, for `--slice`, a local Bambu Studio
 install exposing its CLI. Auto-detection covers the standard macOS and Linux install paths;
 set the plugin's `bambu_bin` option (`/plugin configure printagent`) for anything else.
+
+If a script reports that packages are missing, do not hand the user pip commands and do not try to fix an import error by hand. Run the plugin's bootstrap, which builds a private environment and records it so every skill finds it with nothing to activate:
+
+    python3 <plugin root>/scripts/bootstrap_env.py --check
+    python3 <plugin root>/scripts/bootstrap_env.py --install
