@@ -77,7 +77,8 @@ def instructions():
 1. Open the Onshape developer portal and sign in:
      {PORTAL}
 
-2. Click "Create new API key". Tick at least read and write scopes.
+2. Open the "API keys" tab (the page starts on "Overview"), then click the
+   blue "Create new API key" button. Tick at least read and write scopes.
    Delete scope is optional; without it, reuse documents with --url instead
    of recreating them.
 
