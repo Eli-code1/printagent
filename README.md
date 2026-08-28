@@ -101,7 +101,7 @@ Two skills reach outside Python, and both stay useful without their tool:
   name nothing. For an unusual one, pass `--bambu-bin`, or set the `bambu_bin` option once with
   `/plugin configure printagent`. Slicing is in scope, starting a print is deliberately not.
 - `publishing-onshape` needs an Onshape account and API keys from the
-  [developer portal](https://cad.onshape.com/appstore/dev-portal). Just ask Claude to set up
+  [developer portal](https://cad.onshape.com/user/developer). Just ask Claude to set up
   Onshape and the skill walks you through it, using
   `scripts/setup_credentials.py`: `--check` reports whether keys exist, `--instructions` prints
   the steps, `--write` prompts for the keys in your own terminal and saves

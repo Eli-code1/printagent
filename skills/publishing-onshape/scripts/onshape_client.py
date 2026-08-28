@@ -61,7 +61,7 @@ def load_credentials() -> tuple[str, str]:
             if access and secret:
                 return access, secret
     raise SystemExit(
-        "No Onshape API keys. Create them at https://cad.onshape.com/appstore/dev-portal\n"
+        "No Onshape API keys. Create them at https://cad.onshape.com/user/developer\n"
         "and save to ~/.config/onshape/credentials as:\n"
         "  ONSHAPE_ACCESS_KEY=...\n  ONSHAPE_SECRET_KEY=...")
 

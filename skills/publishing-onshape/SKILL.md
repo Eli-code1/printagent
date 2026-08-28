@@ -43,7 +43,7 @@ delete-and-recreate a document to change a parameter.
 ## Auth
 API keys (HTTP Basic) from `~/.config/onshape/credentials`
 (`ONSHAPE_ACCESS_KEY=` / `ONSHAPE_SECRET_KEY=` lines) or env vars; created at
-https://cad.onshape.com/appstore/dev-portal. `onshape_client.py` loads them and
+https://cad.onshape.com/user/developer. `onshape_client.py` loads them and
 never logs values. Keys may lack the delete scope ("Invalid API key state" on
 DELETE) - reuse documents with `--url` instead of recreating.
 

@@ -23,7 +23,7 @@ sys.path.insert(0, _HERE)
 
 from onshape_client import CRED_PATHS, request  # noqa: E402
 
-PORTAL = "https://cad.onshape.com/appstore/dev-portal"
+PORTAL = "https://cad.onshape.com/user/developer"
 PRIMARY = CRED_PATHS[0]
 
 
