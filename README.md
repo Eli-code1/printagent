@@ -17,7 +17,7 @@ This repository is both a plugin and its own marketplace, so it installs by name
 | `reviewing-manufacturability-fdm` | Runs the deterministic DFM gates (minimum wall by cone-SDF thickness, overhang angle, enclosed or undrained voids, and build-volume fit) and writes `verification.json`. | yes |
 | `reviewing-structural-loads` | Checks load direction against the layer plane, finds the weakest cross-section, flags stress risers, and reports mass, center of mass, and inertia into `structural_review.json`. | yes |
 | `verifying-assembly-fit` | Verifies a multi-part kit assembles in real life: measures every joint from the built meshes, applies an as-printed FDM tolerance model, classifies each fit against its intent, and sweeps insertion paths in assembly order. | yes |
-| `slicing-handoff-bambu` | Packages a verified part into a millimetre 3MF, an archival STEP, and a manifest, with an optional Bambu Studio CLI slice. | yes |
+| `slicing-handoff-bambu` | Packages a verified part into a millimetre 3MF, an archival STEP, and a manifest, with an optional Bambu Studio CLI slice or a print-ready Bambu Studio project export. | yes |
 | `publishing-onshape` | Publishes a part to Onshape as a native, visually editable feature tree (real sketches and extrudes) via the REST API. | no, stdlib |
 | `analyzing-print-failures` | Diagnoses a failed print (warping, stringing, layer shift, and the rest) and routes the fix. | no, stdlib |
 | `designing-in-plain-language` | An opt-in mode that asks only the questions that matter, in plain words, and explains the gate and review results without jargon. It wraps the other skills. | no, stdlib |
@@ -96,7 +96,8 @@ library alone.
 Two skills reach outside Python, and both stay useful without their tool:
 
 - `slicing-handoff-bambu` writes the 3MF, the STEP, and the manifest with no external tool.
-  Only the optional `--slice` step needs a local Bambu Studio, and it finds the binary itself:
+  Only the optional `--slice` and `--project` steps need a local Bambu Studio, and it finds
+  the binary itself:
   `PATH` first, then the standard macOS and Linux install locations. On a normal install you
   name nothing. For an unusual one, pass `--bambu-bin`, or set the `bambu_bin` option once with
   `/plugin configure printagent`. Slicing is in scope, starting a print is deliberately not.

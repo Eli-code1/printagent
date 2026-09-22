@@ -1,4 +1,5 @@
-"""Orchestrator: export 3MF + STEP, build the manifest, optionally slice."""
+"""Orchestrator: export 3MF + STEP, build the manifest, optionally slice or
+export a print-ready Bambu Studio project."""
 from __future__ import annotations
 
 # Run under an interpreter that has the geometry packages. No-op when the current
@@ -25,7 +26,7 @@ import sys
 
 from export_3mf import export_3mf
 from build_manifest import build_manifest
-from slice_bambu import slice_bambu
+from slice_bambu import export_project, slice_bambu
 
 
 @contextlib.contextmanager
@@ -58,10 +59,18 @@ def main():
     ap.add_argument("--material", default="PLA")
     ap.add_argument("--supports", default="auto")
     ap.add_argument("--brim", default="on")
+    ap.add_argument("--walls", type=int, default=None,
+                    help="wall loops hint; only written when given")
     ap.add_argument("--verification", default=None)
     ap.add_argument("--renders", default=None)
     ap.add_argument("--spec", default=None)
     ap.add_argument("--slice", action="store_true")
+    ap.add_argument("--project", action="store_true",
+                    help="also write model.project.3mf, a Bambu Studio project that opens "
+                         "with the print intent applied (needs a local Bambu Studio)")
+    ap.add_argument("--keep-layout", action="store_true",
+                    help="with --project: keep the plate layout in model.3mf instead of "
+                         "arranging (for a hand-laid multi-object plate)")
     ap.add_argument("--bambu-bin", default=None,
                     help="override; auto-detected from PATH and standard installs")
     a = ap.parse_args()
@@ -76,9 +85,20 @@ def main():
                   "layer_height_mm": a.layer_height, "bed_type": a.bed_type,
                   "supports": a.supports, "brim": a.brim,
                   "filament_slots_logical": [{"role": "primary", "material": a.material}]}
-        manifest = build_manifest(a.out, geom, intent, a.verification, a.renders, a.spec)
+        if a.walls is not None:
+            intent["walls"] = a.walls
+        # Before the manifest, so provenance can hash the project file it produced.
+        project = None
+        if a.project:
+            project = export_project(geom["model_3mf"], a.out, intent, walls=a.walls,
+                                     bambu_bin=a.bambu_bin, keep_layout=a.keep_layout)
+        extra = ("model.project.3mf",) if project and project["exported"] else ()
+        manifest = build_manifest(a.out, geom, intent, a.verification, a.renders, a.spec,
+                                  extra_files=extra)
 
         result = {"handoff_dir": a.out, "manifest": manifest}
+        if project is not None:
+            result["project"] = project
         if a.slice:
             result["slice"] = slice_bambu(geom["model_3mf"], a.out, a.bambu_bin)
     print(json.dumps(result, indent=2))
