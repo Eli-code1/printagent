@@ -16,7 +16,10 @@ def _sha256(path: str) -> str:
 
 
 def build_manifest(out_dir, geom, intent, verification_path=None,
-                   renders_dir=None, spec_path=None):
+                   renders_dir=None, spec_path=None, extra_files=()):
+    """`extra_files` names further artifacts this run produced in out_dir (such as
+    model.project.3mf) to hash into provenance; a stale one from an earlier run is
+    never picked up by accident."""
     os.makedirs(out_dir, exist_ok=True)
 
     verification = {"manufacturable": None, "gates_passed": [], "gates_failed": [], "warnings": []}
@@ -35,7 +38,7 @@ def build_manifest(out_dir, geom, intent, verification_path=None,
         shutil.copyfile(spec_path, os.path.join(out_dir, "spec.json"))
 
     files = {}
-    for name in ("model.3mf", "model.step"):
+    for name in ("model.3mf", "model.step", *extra_files):
         p = os.path.join(out_dir, name)
         if os.path.exists(p):
             files[name] = _sha256(p)
